@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
-import { Table, Input, Select, Button, Tag } from "antd";
-import { SearchOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table, Input, Select, Button, Tag, Modal } from "antd";
+import { SearchOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
+import '@ant-design/v5-patch-for-react-19';
 
 interface DataType {
   key: number;
@@ -27,7 +28,6 @@ export const TableData = () => {
   const [tableData, setTableData] = useState<DataType[]>(data);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
 
-
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
   };
@@ -48,9 +48,19 @@ export const TableData = () => {
     alert(key);
   };
 
-  const handleBulkDelete = () => {
-    setTableData((prevData) => prevData.filter((item) => !selectedRowKeys.includes(item.key)));
-    setSelectedRowKeys([]);
+  // Confirmation Modal for Bulk Delete
+  const showBulkDeleteConfirm = () => {
+    Modal.confirm({
+      title: "Confirm Bulk Deletion",
+      icon: <ExclamationCircleOutlined />,
+      content: `Are you sure you want to delete ${selectedRowKeys.length} selected items?`,
+      okText: "Continue",
+      cancelText: "Cancel",
+      onOk() {
+        setTableData((prevData) => prevData.filter((item) => !selectedRowKeys.includes(item.key)));
+        setSelectedRowKeys([]);
+      },
+    });
   };
 
   const handleSelectChange = (keys: React.Key[]) => {
@@ -114,7 +124,7 @@ export const TableData = () => {
       title: "Actions",
       render: (_, record) => (
         <div className="flex gap-2">
-            <Button type="primary" icon={<EditOutlined />} onClick={() => handleEdit(record.key)} />
+          <Button type="primary" icon={<EditOutlined />} onClick={() => handleEdit(record.key)} />
           <Button type="default" danger icon={<DeleteOutlined />} onClick={() => handleDelete(record.key)} />
         </div>
       ),
@@ -125,19 +135,28 @@ export const TableData = () => {
     <div className="p-4">
       <h4 className="font-semibold mb-4">Contact Us</h4>
       <div className="flex gap-4 mb-4">
-        <Input placeholder="Search everything..." prefix={<SearchOutlined />} onChange={handleSearch} className="w-1/3" />
+        <Input
+          placeholder="Search everything..."
+          prefix={<SearchOutlined />}
+          onChange={handleSearch}
+          className="w-1/3"
+        />
         <Select placeholder="Filter by role" onChange={handleFilterChange} allowClear className="w-1/3">
           {roleFilters.map(({ value, text }) => (
-            <Select.Option key={value} value={value}>{text}</Select.Option>
+            <Select.Option key={value} value={value}>
+              {text}
+            </Select.Option>
           ))}
         </Select>
         <Select placeholder="Filter by status" onChange={handleStatusFilterChange} allowClear className="w-1/3">
           {statusFilters.map(({ value, text }) => (
-            <Select.Option key={value} value={value}>{text}</Select.Option>
+            <Select.Option key={value} value={value}>
+              {text}
+            </Select.Option>
           ))}
         </Select>
       </div>
-      <Button type="primary" danger onClick={handleBulkDelete} disabled={!selectedRowKeys.length} className="mb-4">
+      <Button type="primary" danger onClick={showBulkDeleteConfirm} disabled={!selectedRowKeys.length} className="mb-4">
         Delete Selected
       </Button>
       <Table
@@ -145,8 +164,8 @@ export const TableData = () => {
           selectedRowKeys,
           onChange: handleSelectChange,
         }}
-        columns={columns} 
-        dataSource={filteredData} 
+        columns={columns}
+        dataSource={filteredData}
         pagination={{ pageSize: 5 }}
       />
     </div>
