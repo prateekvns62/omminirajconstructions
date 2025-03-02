@@ -184,7 +184,7 @@ export default function TableData({ users }: { users: ContactType[] }) {
 
   return (
     <div className="p-4">
-      <h4 className="font-semibold mb-4">Contact Management</h4>
+      <h4 className="font-semibold mb-4">Contact Us Form records</h4>
       <div className="flex gap-4 mb-4">
         <Input placeholder="Search by name, email, or mobile..." prefix={<SearchOutlined />} onChange={handleSearch} className="w-1/4" />
         <Select placeholder="Filter by status" onChange={handleStatusFilterChange} allowClear className="w-1/4">
