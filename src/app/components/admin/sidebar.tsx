@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
@@ -22,15 +22,27 @@ import {
 } from "lucide-react";
 
 const Sidebar = () => {
-  const pathname = usePathname();
+  const pathname = usePathname() || "";
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
 
+  useEffect(() => {
+    menuItems.forEach((item) => {
+      if (item.subMenu?.some((sub) => pathname.startsWith(sub.path))) {
+        setOpenMenus({ [item.name]: true });
+      }
+    });
+  }, [pathname]);
+
+
   const toggleMenu = (menuName: string) => {
-    setOpenMenus((prev) => ({
-      ...prev, 
-      [menuName]: !prev[menuName]
-    }));
+    setOpenMenus((prev) => {
+      const isAlreadyOpen = prev[menuName];
+      return { [menuName]: !isAlreadyOpen }; // Close all other menus
+    });
   };
+  
+
+  
 
   const menuItems = [
     { name: "Contact Us", path: "/admin/contact", icon: <Phone size={18} /> },
@@ -160,10 +172,9 @@ const Sidebar = () => {
           {menuItems.map((item) => (
             <li key={item.path}>
               {item.subMenu ? (
-                // If submenu exists, it remains as a div with toggle
                 <div 
                   className={`flex items-center justify-between p-2 mb-2 rounded-md cursor-pointer hover:bg-gray-200 transition ${
-                    pathname.startsWith(item.path) ? "bg-gray-300" : ""
+                    openMenus[item.name] ? "bg-gray-300" : ""
                   }`}
                   onClick={() => toggleMenu(item.name)}
                 >
@@ -174,24 +185,31 @@ const Sidebar = () => {
                   {openMenus[item.name] ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </div>
               ) : (
-                // If no submenu, wrap in Link
-                <Link 
-                  href={item.path} 
-                  className={`flex items-center gap-2 p-2 mb-2 rounded-md cursor-pointer hover:bg-gray-200 transition ${
-                    pathname.startsWith(item.path) ? "bg-gray-300" : ""
-                  }`}
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
+                <div 
+                  className={`flex items-center justify-between mb-2 rounded-md cursor-pointer hover:bg-gray-200 transition ${
+                          pathname.startsWith(item.path) ? "bg-gray-400 text-white" : ""}`}
+                  onClick={() => toggleMenu(item.name)}
+                ><Link 
+                    href={item.path} 
+                    className={`flex items-center gap-2 p-2 w-100  rounded-md hover:bg-gray-200 transition ${
+                          pathname.startsWith(item.path) ? "bg-gray-400 text-white" : ""}`}
+                  >
+                    {item.icon}
+                    <span>{item.name}</span>
+                  </Link>
+                </div>
               )}
 
-              {/* Submenu */}
               {item.subMenu && openMenus[item.name] && (
                 <ul className="ml-6 mt-1 space-y-1">
                   {item.subMenu.map((subItem) => (
                     <li key={subItem.path}>
-                      <Link href={subItem.path} className="block p-2 text-sm rounded-md hover:bg-gray-200">
+                      <Link 
+                        href={subItem.path} 
+                        className={`block p-2 text-sm rounded-md hover:bg-gray-200 transition ${
+                          pathname.startsWith(subItem.path) ? "bg-gray-400 text-white" : ""
+                        }`}
+                      >
                         {subItem.name}
                       </Link>
                     </li>
