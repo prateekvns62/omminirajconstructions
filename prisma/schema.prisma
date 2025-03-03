@@ -44,3 +44,27 @@ model ContactUsReply {
   created_at DateTime @default(now())
   @@map("contact_us_reply")
 }
+
+model FranchiseRecord {
+  id                        Int     @id @default(autoincrement())
+  name                      String
+  email                     String  @unique
+  address                   String
+  doYouHave                 String
+  mobileNumber              String  @unique
+  message                   String
+  gstNumber                 String?
+  franchiseId               String?  @unique
+  franchiseCertificateUrl   String?
+  aadhaarCardNumber         String  @unique
+  accountNumber             String
+  ifscCode                  String
+  passbookCopy              String
+  panCardCopy               String
+  aadharFrontCopy           String
+  aadharBackCopy            String
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @default(now())
+  Status                    Int @default(0)
+  @@map("franchise_record")
+}
