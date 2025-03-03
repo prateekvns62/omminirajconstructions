@@ -1,17 +1,11 @@
-import TableData from "@/app/components/franchise/tableData";
 import { PrismaClient } from "@prisma/client";
+import TableData from "@/app/components/contact/tableData";
 
 const prisma = new PrismaClient();
 
 export default async function Home() {
   try {
-    const franchises = await prisma.FranchiseRecord.findMany({
-      orderBy: {
-        createdAt: "desc", // Fetch newest entries first
-      },
-    });
-
-    return <TableData records={franchises} />;
+    <h2>Add Frenchise Record</h2>
   } catch (error) {
     return <p>No record found.</p>;
   } finally {

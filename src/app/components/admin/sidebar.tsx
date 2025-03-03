@@ -40,6 +40,10 @@ const Sidebar = () => {
       return { [menuName]: !isAlreadyOpen }; // Close all other menus
     });
   };
+
+  const handleMenuClick = (title: string) => {
+    localStorage.setItem("pageTitle", title);
+  };
   
 const menuItems = [
     { name: "Contact Us", path: "/admin/contact", icon: <Phone size={18} color="blue" /> },
@@ -148,67 +152,71 @@ const menuItems = [
 ];
 
 
-  return (
-    <aside className="w-64 bg-white text-gray-800 h-full p-4 shadow-md">
-      <nav>
-        <ul>
-          {/* Dashboard with Link */}
-          <li>
-            <Link href="/" className="flex items-center gap-2 p-3 mb-3 font-semibold border-b border-black hover:text-black-500">
-              {/* <Home size={18} className="text-black-600" /> */}
-              <span>Dashboard</span>
-            </Link>
-          </li>
+return (
+  <aside className="w-64 bg-white text-gray-800 h-full p-4 shadow-md">
+    <nav>
+      <ul>
+        <li>
+          <Link 
+            href="/admin" 
+            onClick={() => handleMenuClick("Dashboard")}
+            className="flex items-center gap-2 p-3 mb-3 font-semibold border-b border-black hover:text-black-500"
+          >
+            <span>Dashboard</span>
+          </Link>
+        </li>
 
-          {menuItems.map((item) => (
-            <li key={item.path}>
-              {item.subMenu ? (
-                <div 
-                  className={`flex items-center justify-between p-2 mb-2 rounded-md cursor-pointer hover:bg-gray-200 transition ${
-                    openMenus[item.name] ? "bg-gray-300" : ""
-                  }`}
-                  onClick={() => toggleMenu(item.name)}
-                >
-                  <div className="flex items-center gap-2">
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </div>
-                  {openMenus[item.name] ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </div>
-              ) : (
-                <Link 
-                  href={item.path} 
-                  className={`flex items-center gap-2 p-2 w-full rounded-md hover:bg-gray-200 transition ${
-                    pathname.startsWith(item.path) ? "bg-gray-400 text-white" : ""
-                  }`}
-                >
+        {menuItems.map((item) => (
+          <li key={item.path} className="mb-4">
+            {item.subMenu ? (
+              <div 
+                className={`flex items-center justify-between p-2 mb-2 rounded-md cursor-pointer hover:bg-gray-200 transition ${
+                  openMenus[item.name] ? "bg-gray-300" : ""
+                }`}
+                onClick={() => toggleMenu(item.name)}
+              >
+                <div className="flex items-center gap-2">
                   {item.icon}
                   <span>{item.name}</span>
-                </Link>
-              )}
+                </div>
+                {openMenus[item.name] ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+              </div>
+            ) : (
+              <Link 
+                href={item.path} 
+                onClick={() => handleMenuClick(item.name)}
+                className={`flex items-center gap-2 p-2 w-full rounded-md hover:bg-gray-200 transition ${
+                  pathname.startsWith(item.path) ? "bg-gray-400 text-white" : ""
+                }`}
+              >
+                {item.icon}
+                <span>{item.name}</span>
+              </Link>
+            )}
 
-              {item.subMenu && openMenus[item.name] && (
-                <ul className="ml-6 mt-1 space-y-1">
-                  {item.subMenu.map((subItem) => (
-                    <li key={subItem.path}>
-                      <Link 
-                        href={subItem.path} 
-                        className={`block p-2 text-sm rounded-md hover:bg-gray-200 transition ${
-                          pathname.startsWith(subItem.path) ? "bg-gray-400 text-white" : ""
-                        }`}
-                      >
-                        {subItem.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </aside>
-  );
+            {item.subMenu && openMenus[item.name] && (
+              <ul className="ml-6 mt-1 space-y-1">
+                {item.subMenu.map((subItem) => (
+                  <li key={subItem.path} className="mb-2">
+                    <Link 
+                      href={subItem.path} 
+                      onClick={() => handleMenuClick(subItem.name)}
+                      className={`block p-2 text-md rounded-md hover:bg-gray-200 transition ${
+                        pathname.startsWith(subItem.path) ? "bg-gray-400 text-white" : ""
+                      }`}
+                    >
+                      {subItem.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </aside>
+);
 };
 
 export default Sidebar;
