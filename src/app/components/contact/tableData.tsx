@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { format, isWithinInterval, parseISO } from "date-fns";
 import '@ant-design/v5-patch-for-react-19';
 import type { TablePaginationConfig } from "antd/es/table";
-import moment from "moment";
+import PageTitle from "../admin/pagetitle";
 
 const { RangePicker } = DatePicker;
 
@@ -33,6 +33,9 @@ export default function TableData({ users }: { users: ContactType[] }) {
     pageSize: 20,
   });
 
+  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
+
+  
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination({ current: pagination.current!, pageSize: pagination.pageSize! });
   };
@@ -48,7 +51,8 @@ export default function TableData({ users }: { users: ContactType[] }) {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value);
 
-  const handleStatusFilterChange = (value: number | null) => setFilteredStatus(value);
+  const handleStatusFilterChange = (value: number | null) => setFilteredStatus(value ?? null);
+
 
   const handleDateRangeChange = (dates: any) => {
     if (!dates || !dates[0] || !dates[1]) {
@@ -125,7 +129,7 @@ export default function TableData({ users }: { users: ContactType[] }) {
   };
   
 
-  const filteredData = tableData.filter((item) => isSearchMatch(item) && (filteredStatus !== null ? item.status === filteredStatus : true) && isDateInRange(format(new Date(item.created_at), "yyyy-MM-dd")));
+  const filteredData = tableData.filter((item) => isSearchMatch(item) && (filteredStatus === null || item.status === filteredStatus) && isDateInRange(format(new Date(item.created_at), "yyyy-MM-dd")));
 
   const getStatusTag = (status: number) => (
     <Tooltip title={status === 1 ? "Unread" : "Read"}>
@@ -156,12 +160,23 @@ export default function TableData({ users }: { users: ContactType[] }) {
   ];
 
   return (
+    <div>
+      <PageTitle title="Contact Us Records" />
     <div className="p-4">
       <div className="flex gap-4 mb-4">
         <Input placeholder="Search by name, email, or mobile..." prefix={<SearchOutlined />} onChange={handleSearch} className="w-1/4" />
-        <Select placeholder="Filter by status" onChange={handleStatusFilterChange} allowClear className="w-1/4">
-          <Select.Option value={1}>Active</Select.Option>
-          <Select.Option value={0}>Inactive</Select.Option>
+        <Select
+          placeholder="Filter by status"
+          onChange={handleStatusFilterChange}
+          allowClear
+          className="w-1/4"
+          value={filteredStatus}
+        >
+          {[...new Set(tableData.map(item => item.status))].map(status => (
+            <Select.Option key={status} value={status}>
+              {status === 1 ? "Unread" : "Read"}
+            </Select.Option>
+          ))}
         </Select>
         <RangePicker onChange={handleDateRangeChange} className="w-1/2" />
       </div>
@@ -193,6 +208,6 @@ export default function TableData({ users }: { users: ContactType[] }) {
         />
       )}
     </div>
+    </div>
   );
 }
-

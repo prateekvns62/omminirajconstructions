@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { format, isWithinInterval, parseISO } from "date-fns";
 import '@ant-design/v5-patch-for-react-19';
 import type { TablePaginationConfig } from "antd/es/table";
-import moment from "moment";
+import PageTitle from "../admin/pagetitle";
 
 const { RangePicker } = DatePicker;
 
@@ -29,9 +29,16 @@ export default function TableData({ records }: { records: FranchiseRecord[] }) {
   const [tableData, setTableData] = useState<FranchiseRecord[]>([]);
   const [dateRange, setDateRange] = useState<[string | null, string | null]>([null, null]);
   const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState<TablePaginationConfig>({ current: 1, pageSize: 20 });
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 20,
+  });
 
   const router = useRouter();
+
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    setPagination({ current: pagination.current!, pageSize: pagination.pageSize! });
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -112,21 +119,31 @@ export default function TableData({ records }: { records: FranchiseRecord[] }) {
   ];
 
   return (
-    <div className="p-4">
-      <div className="flex gap-4 mb-4">
-        <Input placeholder="Search by name, email, or mobile..." prefix={<SearchOutlined />} onChange={handleSearch} className="w-1/4" />
-        <Select placeholder="Filter by status" onChange={handleStatusFilterChange} allowClear className="w-1/4">
-          <Select.Option value={0}>Submitted</Select.Option>
-          <Select.Option value={1}>Approved</Select.Option>
-          <Select.Option value={2}>Rejected</Select.Option>
-        </Select>
-        <RangePicker onChange={handleDateRangeChange} className="w-1/2" />
+    <div>
+      <PageTitle title="Franchise Records" />
+      <div className="p-4">
+        <div className="flex gap-4 mb-4">
+          <Input placeholder="Search by name, email, or mobile..." prefix={<SearchOutlined />} onChange={handleSearch} className="w-1/4" />
+          <Select placeholder="Filter by status" onChange={handleStatusFilterChange} allowClear className="w-1/4">
+            <Select.Option value={0}>Submitted</Select.Option>
+            <Select.Option value={1}>Approved</Select.Option>
+            <Select.Option value={2}>Rejected</Select.Option>
+          </Select>
+          <RangePicker onChange={handleDateRangeChange} className="w-1/2" />
+        </div>
+        {loading ? (
+          <Skeleton active paragraph={{ rows: 10 }} />
+        ) : (
+          <Table rowSelection={{ selectedRowKeys, onChange: handleSelectChange }} columns={columns} dataSource={filteredData} pagination={{
+                  current: pagination.current,
+                  pageSize: pagination.pageSize,
+                  showSizeChanger: true,  // Allow changing page size
+                  pageSizeOptions: ["10", "20", "50", "100"],
+                  showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} records`,
+                  onChange: (page, pageSize) => setPagination({ current: page, pageSize }),
+              }} rowKey="id" onChange={handleTableChange} />
+        )}
       </div>
-      {loading ? (
-        <Skeleton active paragraph={{ rows: 10 }} />
-      ) : (
-        <Table rowSelection={{ selectedRowKeys, onChange: handleSelectChange }} columns={columns} dataSource={filteredData} pagination={pagination} rowKey="id" />
-      )}
     </div>
   );
 }
