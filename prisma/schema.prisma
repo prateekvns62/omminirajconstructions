@@ -48,15 +48,15 @@ model ContactUsReply {
 model FranchiseRecord {
   id                        Int     @id @default(autoincrement())
   name                      String
-  email                     String  @unique
+  email                     String
   address                   String
   doYouHave                 String
-  mobileNumber              String  @unique
+  mobileNumber              String
   message                   String
   gstNumber                 String?
-  franchiseId               String?  @unique
+  franchiseId               String?
   franchiseCertificateUrl   String?
-  aadhaarCardNumber         String  @unique
+  aadhaarCardNumber         String
   accountNumber             String
   ifscCode                  String
   passbookCopy              String

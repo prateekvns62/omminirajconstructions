@@ -10,7 +10,7 @@ export default async function UserDetailPage({ params }: { params: { id: string 
     
     if (isNaN(franchiseId)) return <p className="text-red-500 text-center">Invalid Franchise ID</p>;
 
-    const franchise = await prisma.FranchiseRecord.findUnique({
+    const franchise = await prisma.franchiseRecord.findUnique({
       where: { id: franchiseId },
     });
     if (!franchise) return <p className="text-red-500 text-center">Franchise Detail not found</p>;
