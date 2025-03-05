@@ -1,13 +1,15 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Descriptions, Tag, Button, Modal, Form, Input, message,Skeleton, Card  } from "antd";
+import { Descriptions, Tag, Button, Modal, Form, Input, message,Skeleton, Card, Image } from "antd";
 import { format } from "date-fns";
-import { CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { MailOutlined, DownloadOutlined, CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import '@ant-design/v5-patch-for-react-19';
 import { usePathname, useRouter } from "next/navigation";
 import PageTitle from "../admin/pagetitle";
 import generatePDF from "./generatePdf";
 
+const isImage = (url:any) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+const isPDF = (url:any) => /\.pdf$/i.test(url);
 
 interface FranchiseRecord {
   id: number;
@@ -55,6 +57,58 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
   const router = useRouter();
   const pathname = usePathname() || "/admin";
   const [previousUrl, setPreviousUrl] = useState<string | null>(null);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewImage, setPreviewImage] = useState("");
+
+  const handlePreview = (imageUrl:any) => {
+    setPreviewImage(imageUrl);
+    setPreviewVisible(true);
+  };
+
+  const renderDocument = (label:any, fileUrl:any) => {
+    if (!fileUrl) return "N/A";
+
+    if (isPDF(fileUrl)) {
+      return (
+        <>
+          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
+            {label}
+          </a>
+          <Button
+            type="link"
+            icon={<DownloadOutlined />}
+            href={fileUrl}
+            download
+            style={{ marginLeft: 8 }}
+          >
+            Download
+          </Button>
+        </>
+      );
+    } else if (isImage(fileUrl)) {
+      return (
+        <>
+          <Image
+            width={50}
+            src={fileUrl}
+            preview={{ visible: false }} // ✅ Uses built-in preview only
+            onClick={() => handlePreview(fileUrl)}
+            style={{ cursor: "pointer", marginRight: 8 }}
+          />
+          <Button
+            type="link"
+            icon={<DownloadOutlined />}
+            href={fileUrl}
+            download
+          >
+            Download
+          </Button>
+        </>
+      );
+    }
+
+    return "Unsupported file type";
+  };
 
   useEffect(() => {
     let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
@@ -66,6 +120,48 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
 
     setPreviousUrl(historyStack.length > 1 ? historyStack[historyStack.length - 2] : null);
   }, [pathname]);
+
+
+  const handleSendEmail = async () => {
+    Modal.confirm({
+      title: "Send Email?",
+      content: "Are you sure you want to send this email?",
+      onOk: async () => {
+        try {
+          const response = await fetch(`/api/franchise/sendEmail`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(franchiseData),
+          });
+          const result = await response.json();
+          if (response.ok) {
+            message.success(result.message || "Email sent successfully!");
+          } else {
+            message.error(result.message || "Failed to send email.");
+          }
+        } catch (error) {
+          message.error("An error occurred while sending the email.");
+        }
+      },
+    });
+  };
+
+  const handleSendEmailForApproval = async () => {
+    try {
+      const response = await fetch(`/api/franchise/sendEmail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(franchiseData),
+      });
+    } catch (error) {
+      console.log("An error occurred while sending the email.");
+    }
+  };
+  
 
   const handleBack = () => {
     let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
@@ -136,11 +232,11 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({updatedValues}),
       });
-  
       if (response.ok) {
         message.success("Franchise approved successfully");
         setApproveModalVisible(false);
         fetchFranchiseData();
+        handleSendEmailForApproval();
       }
     } catch (error) {
       message.error("An error occurred while approving");
@@ -222,6 +318,17 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             </>
           )}
           {franchiseData.Status === 1 && (
+            <>
+            {/* Send Email Button */}
+                <Button
+                  type="primary"
+                  size="large"
+                  className="bg-blue-500 text-white w-[160px] h-[56px] text-xl font-semibold rounded-lg shadow-md transition-all duration-300 hover:bg-blue-600 hover:shadow-lg flex items-center justify-center"
+                  icon={<MailOutlined />}
+                  onClick={handleSendEmail}
+                >
+                  Send Email
+                </Button>
             <Button
               type="primary"
               size="large"
@@ -232,8 +339,28 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             >
               Reject
             </Button>
+            <Button
+                type="primary"
+                size="large"
+                className="px-6 py-3 text-lg flex items-center space-x-2 transition-all duration-300 hover:bg-green-600"
+                icon={<CheckCircleOutlined />}
+                onClick={handleApprove}
+              >
+                Re Generate Certificate
+              </Button>
+            </>
           )}
           {franchiseData.Status === 2 && (
+            <>
+              <Button
+                type="primary"
+                size="large"
+                className="px-6 py-3 text-lg flex items-center space-x-2 transition-all duration-300 hover:bg-green-600"
+                icon={<CheckCircleOutlined />}
+                onClick={handleApprove}
+              >
+                Approve
+            </Button>
             <Button
               type="primary"
               size="large"
@@ -244,6 +371,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             >
               Delete
             </Button>
+            </>
           )}
         </div>
       </div>
@@ -257,18 +385,61 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             <Descriptions.Item label="IFSC Code">{franchiseData.ifscCode}</Descriptions.Item>
             <Descriptions.Item label="Address" span={2}>{franchiseData.address}</Descriptions.Item>
             <Descriptions.Item label="Do You Have" span={2}>{franchiseData.doYouHave}</Descriptions.Item>
-            <Descriptions.Item label="Passbook Copy" span={2}>{franchiseData.passbookCopy}</Descriptions.Item>
-            <Descriptions.Item label="PAN Card Copy" span={2}>{franchiseData.panCardCopy}</Descriptions.Item>
-            <Descriptions.Item label="Aadhar Front Copy" span={2}>{franchiseData.aadharFrontCopy}</Descriptions.Item>
-            <Descriptions.Item label="Aadhar Back Copy" span={2}>{franchiseData.aadharBackCopy}</Descriptions.Item>
           </Descriptions>
         </div>
+
+        <div className="mt-4">
+        <Descriptions title="Franchise Documents" bordered column={2}>
+          <Descriptions.Item label="Passbook Copy" span={2}>
+            {renderDocument("Passbook Copy", franchiseData.passbookCopy)}
+          </Descriptions.Item>
+          <Descriptions.Item label="PAN Card Copy" span={2}>
+            {renderDocument("PAN Card Copy", franchiseData.panCardCopy)}
+          </Descriptions.Item>
+          <Descriptions.Item label="Aadhar Front Copy" span={2}>
+            {renderDocument("Aadhar Front Copy", franchiseData.aadharFrontCopy)}
+          </Descriptions.Item>
+          <Descriptions.Item label="Aadhar Back Copy" span={2}>
+            {renderDocument("Aadhar Back Copy", franchiseData.aadharBackCopy)}
+          </Descriptions.Item>
+        </Descriptions>
+        {previewVisible && (
+        <Image.PreviewGroup
+          preview={{
+            visible: previewVisible,
+            onVisibleChange: (visible) => !visible && setPreviewVisible(false),
+          }}
+        >
+          <Image src={previewImage} width={0} height={0} />
+        </Image.PreviewGroup>
+      )}
+        </div>
+
 
         <div className="mt-4">
           <Descriptions bordered column={1} size="middle" title="Franchise Details">
             <Descriptions.Item label="GST Number">{franchiseData.gstNumber || "N/A"}</Descriptions.Item>
             <Descriptions.Item label="Franchise ID">{franchiseData.franchiseId || "N/A"}</Descriptions.Item>
-            <Descriptions.Item label="Franchise Certificate URL">{franchiseData.franchiseCertificateUrl || "N/A"}</Descriptions.Item>
+            <Descriptions.Item label="Franchise Certificate URL">
+              {franchiseData.franchiseCertificateUrl ? (
+                <>
+                  <a href={franchiseData.franchiseCertificateUrl} target="_blank" rel="noopener noreferrer">
+                    {franchiseData.franchiseCertificateUrl}
+                  </a>
+                  <Button
+                    type="link"
+                    icon={<DownloadOutlined />}
+                    href={franchiseData.franchiseCertificateUrl}
+                    download
+                    style={{ marginLeft: 8 }}
+                  >
+                    Download
+                  </Button>
+                </>
+              ) : (
+                "N/A"
+              )}
+            </Descriptions.Item>
           </Descriptions>
         </div>
         
@@ -298,6 +469,9 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
               onFinish={submitApproval} 
               layout="vertical" 
               className="space-y-4 p-4"
+              initialValues={{
+                gstNumber: franchiseData.gstNumber || "", // Set default value
+              }}
             >
               {/* GST Number Field */}
               <Form.Item 
@@ -311,6 +485,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
                   placeholder="Enter GST Number" 
                   size="large" 
                   className="rounded-lg border-gray-300 shadow-sm"
+                  value={franchiseData.gstNumber || ""}
                 />
               </Form.Item>
             </Form>

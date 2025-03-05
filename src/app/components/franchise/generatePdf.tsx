@@ -35,6 +35,7 @@ const generatePDF = async (franchise:franchise,values:values) : Promise<string> 
   
   const timesFont = await pdfDoc.embedFont(StandardFonts.TimesRoman);
   const timesBoldFont = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
+  const timesItalicFont = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
   
   // Gold Border
   page.drawRectangle({
@@ -52,80 +53,107 @@ const generatePDF = async (franchise:franchise,values:values) : Promise<string> 
   const logoImage = await pdfDoc.embedJpg(logoImageBytes);
   page.drawImage(logoImage, { x: width / 2 - 57.5, y: height - 115, width: 114, height: 73 });
 
-  // Company Name
-  page.drawText("Om Miniraj Building & Construction Services Pvt. Ltd.", {
-    x: width / 2 - 191,
+  const companyName = "Om Miniraj Building & Construction Services Pvt. Ltd.";
+  const textWidth = timesBoldFont.widthOfTextAtSize(companyName, 16);
+  page.drawText(companyName, {
+    x: (width / 2) - (textWidth/2),
     y: height - 190,
     size: 16,
     font:timesBoldFont,
   });
 
   // Franchise Authorization Title
-  page.drawText("Franchise Authorization", {
-    x: width / 2 - 157,
+  const AytorizationText = "Franchise Authorization";
+  page.drawText(AytorizationText, {
+    x: (width / 2) - 157,
     y: height - 256,
     size: 30,
     font:timesBoldFont,
   });
 
   // Franchisee Name
+  const ftextWidth = timesBoldFont.widthOfTextAtSize(franchise.name, 20);
   page.drawText(franchise.name.toUpperCase(), {
-    x: width / 2 - 100,
-    y: height - 350,
+    x: (width / 2) - (ftextWidth/2) -2,
+    y: height - 333,
     size: 20,
     font:timesBoldFont,
   });
 
   // Separator Line
+  const dtextWidth = timesBoldFont.widthOfTextAtSize("---------------------------------------------", 14);
   page.drawText("---------------------------------------------", {
-    x: width / 2 - 100,
-    y: height - 355,
+    x: (width / 2) - (dtextWidth/2),
+    y: height - 353,
     size: 14,
     font: timesFont,
   });
 
-  // Authorized Date
-  page.drawText(`Authorized Date: ${new Date().toLocaleDateString()}`, {
-    x: width / 2 - 100,
-    y: height - 420,
+  // Authorized Date //February 19, 2025
+  const authorizationDate = `Authorized Date: ${new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}`;
+  const atextWidth = timesItalicFont.widthOfTextAtSize(authorizationDate, 14);
+  page.drawText(authorizationDate, {
+    x: (width / 2) - (atextWidth/2),
+    y: height - 400,
     size: 14,
-    font: timesFont,
+    font: timesItalicFont,
   });
 
   // Franchise Message
-  const message = `This certificate authorizes the franchise partner to operate under the Om Miniraj Building & Construction Services Pvt. Ltd. brand. The franchisee agrees to comply with the terms and conditions set forth in the franchise agreement.`;
-  page.drawText(message, {
-    x: 50,
-    y: height - 440,
+  const message1 = `This certificate authorizes the franchise partner to operate under the Om Miniraj Building & Construction Services Pvt. Ltd. brand.`;
+  const m1textWidth = timesBoldFont.widthOfTextAtSize(message1, 14);
+  const message2 = `The franchisee agrees to comply with the terms and conditions set forth in the franchise agreement.`;
+  const m2textWidth = timesBoldFont.widthOfTextAtSize(message2, 14);
+  page.drawText(message1, {
+    x: (width / 2) - (m1textWidth/2) + 25,
+    y: height - 438,
     size: 14,
     font: timesFont,
-    maxWidth: width - 100,
-    lineHeight: 15,
+  });
+  page.drawText(message2, {
+    x: (width / 2) - (m2textWidth/2),
+    y: height - 455,
+    size: 14,
+    font: timesFont,
   });
 
   // GST Number and Authorized By
   page.drawText(`GST Number: ${values.gstNumber}`, {
-    x: 50,
-    y: height - 500,
+    x: 35,
+    y: height - 523,
     size: 14,
     font:timesBoldFont,
   });
 
   page.drawText(`Franchise ID: ${franchise.franchiseId}`, {
-    x: 50,
-    y: height - 520,
+    x: 35,
+    y: height - 543,
     size: 14,
     font:timesBoldFont,
   });
 
   page.drawText("Authorized By: Jasbeer Singh", {
-    x: width - 240,
-    y: height - 500,
+    x: width - 225,
+    y: height - 543,
     size: 14,
     font:timesBoldFont,
   });
 
+  const signatureUrl = "/seal_sign.PNG"; // Place image in public/ folder
+  const signatureBytes = await fetch(signatureUrl).then((res) => res.arrayBuffer());
+  const signatureImage = await pdfDoc.embedPng(signatureBytes);
+  page.drawImage(signatureImage, { x: width - 235, y: height - 567, width: 205, height: 113.5 });
+
+
   const pdfBytes = await pdfDoc.save();
+  
+  //For direct saving the PDF on system testing perpose
+  //const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  //saveAs(blob, `Franchise_Certificate_${franchise.id}.pdf`);
 
   // Send PDF to API route for saving
   const response = await fetch("/api/upload-pdf", {

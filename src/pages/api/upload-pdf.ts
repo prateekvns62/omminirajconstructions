@@ -16,7 +16,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     fs.writeFileSync(filePath, buffer);
 
     // Return the file URL
-    const fileUrl = `/uploads/${filename}`;
+    const BASE_URL = process.env.BASE_URL; // Fallback for local dev
+    // Construct file URL
+    const fileUrl = `${BASE_URL}/uploads/${filename}`;
     res.status(200).json({ fileUrl });
   } catch (error) {
     console.error("Error saving PDF:", error);
