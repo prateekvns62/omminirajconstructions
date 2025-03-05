@@ -13,14 +13,6 @@ Using npm:
 ```sh
 npm install
 ```
-Using yarn:
-```sh
-yarn install
-```
-Using pnpm:
-```sh
-pnpm install
-```
 
 ### Create Environment File
 Create a `.env.local` file in the root directory and add necessary environment variables.
@@ -31,10 +23,6 @@ touch .env.local
 ### Run the Development Server
 ```sh
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
@@ -69,9 +57,25 @@ npm i -g vercel
 vercel
 ```
 
+## 🔄 Post-Pull Instructions
+After pulling the latest changes from the repository, always run:
+```sh
+npm install
+```
+
+Update the `.env.local` file with your MySQL credentials:
+```sh
+DATABASE_URL="mysql://db_username:yourpassword@localhost:3306/db_name"
+```
+
+Then, apply database migrations:
+```sh
+npx prisma migrate dev --name init
+npx prisma generate
+```
+
 ## 🤝 Contributing
 Feel free to fork the repository and make pull requests. For major changes, please open an issue first.
 
 ## 📜 License
 This project is licensed under the MIT License.
-
