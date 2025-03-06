@@ -14,18 +14,18 @@ datasource db {
 }
 
 
-model User {
+model user {
   id    Int    @id @default(autoincrement())
   name  String
-  email String @unique
-  username String @unique
+  email String
+  username String
   password String
   status Int @default(1)
   created_at DateTime @default(now())
   last_login DateTime @default(now())
 }
 
-model ContactUs {
+model contactUs {
   id            Int @id @default(autoincrement())
   name          String
   mobile_number String
@@ -37,7 +37,7 @@ model ContactUs {
   @@map("contact_us")
 }
 
-model ContactUsReply {
+model contactUsReply {
   id             Int @id @default(autoincrement())
   contact_us_id Int
   message       String
@@ -45,7 +45,7 @@ model ContactUsReply {
   @@map("contact_us_reply")
 }
 
-model FranchiseRecord {
+model franchiseRecord {
   id                        Int     @id @default(autoincrement())
   name                      String
   email                     String

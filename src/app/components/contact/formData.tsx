@@ -12,19 +12,43 @@ interface UserType {
   email: string;
   message: string;
   status: number;
-  created_at: string;
-  updated_at: string;
+  created_at: string | Date;
+  updated_at: string | Date;
 }
 
 interface ReplyType {
   id: number;
   message: string;
-  created_at: string;
+  created_at: string | Date;
 }
 
-export default function FormData({ user, adminReply }: { user: UserType, adminReply: ReplyType[] }) {
+export default function FormData({ user, adminReply, contactUsReplyOnce }: { user: UserType, adminReply: ReplyType[], contactUsReplyOnce: boolean }) {
   const [replyMessage, setReplyMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+
+  const handleSendEmail = async (id: number, name: string, email: string, message: string, userMessage: any) => {
+    const contactUsReply = {id, name, email, message, userMessage};
+
+    try {
+        const response = await fetch(`/api/contact/sendEmail`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(contactUsReply), // Passing the object as JSON
+        });
+
+        if (response.ok) {
+            console.log("Email sent successfully");
+        } else {
+            console.log("Failed to send email");
+        }
+    } catch (error) {
+        console.log("An error occurred while sending the email.", error);
+    }
+  };
+
 
   const handleSendReply = async () => {
     if (!replyMessage.trim()) {
@@ -53,6 +77,7 @@ export default function FormData({ user, adminReply }: { user: UserType, adminRe
         antdMessage.success("Reply sent successfully and saved to database!");
         setReplyMessage("");
         adminReply.push({ id: result.savedReply.id, message: replyMessage, created_at: new Date().toISOString() });
+        handleSendEmail(user.id,user.name,user.email,replyMessage,user.message);
       } else {
         antdMessage.error(result.message || "Failed to send the message.");
       }
@@ -100,19 +125,21 @@ export default function FormData({ user, adminReply }: { user: UserType, adminRe
           )}
 
         {/* Reply Section */}
-        <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">Reply Back to Customer</h3>
+        {(!contactUsReplyOnce || adminReply.length === 0) && (
+          <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+            <h3 className="text-lg font-semibold mb-2">Reply Back to Customer</h3>
 
-          <Input.TextArea
-            rows={4}
-            placeholder="Type your reply message here..."
-            value={replyMessage}
-            onChange={(e) => setReplyMessage(e.target.value)}
-          />
-          <Button type="primary" className="mt-3" loading={loading} onClick={handleSendReply}>
-            {loading ? "Sending..." : "Send Message"}
-          </Button>
-        </div>
+            <Input.TextArea
+              rows={4}
+              placeholder="Type your reply message here..."
+              value={replyMessage}
+              onChange={(e) => setReplyMessage(e.target.value)}
+            />
+            <Button type="primary" className="mt-3" loading={loading} onClick={handleSendReply}>
+              {loading ? "Sending..." : "Send Message"}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

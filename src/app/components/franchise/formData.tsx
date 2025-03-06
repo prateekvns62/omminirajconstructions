@@ -148,9 +148,9 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
     });
   };
 
-  const handleSendEmailForApproval = async () => {
+  const handleSendEmailForApproval = async (type:string,gstNumber:any) => {
     try {
-      const response = await fetch(`/api/franchise/sendEmail`, {
+      const response = await fetch(`/api/franchise/sendEmail?type=${encodeURIComponent(type)}&gstNumber=${encodeURIComponent(gstNumber)}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -219,6 +219,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
 
   const submitApproval = async (values: any) => {
     try {
+      const { gstNumber } = values;
       // Generate PDF and get the URL
       const pdfUrl = await generatePDF(franchise, values);
       console.log("Saved PDF URL:", pdfUrl);
@@ -236,7 +237,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
         message.success("Franchise approved successfully");
         setApproveModalVisible(false);
         fetchFranchiseData();
-        handleSendEmailForApproval();
+        handleSendEmailForApproval("approve",gstNumber);
       }
     } catch (error) {
       message.error("An error occurred while approving");
@@ -258,6 +259,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
           if (response.ok) {
             message.success("Franchise request rejected");
             fetchFranchiseData();
+            handleSendEmailForApproval("reject",null);
           }
         } catch (error) {
           message.error("An error occurred while rejecting");
@@ -418,8 +420,8 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
 
         <div className="mt-4">
           <Descriptions bordered column={1} size="middle" title="Franchise Details">
-            <Descriptions.Item label="GST Number">{franchiseData.gstNumber || "N/A"}</Descriptions.Item>
             <Descriptions.Item label="Franchise ID">{franchiseData.franchiseId || "N/A"}</Descriptions.Item>
+            <Descriptions.Item label="GST Number">{franchiseData.gstNumber || "N/A"}</Descriptions.Item>
             <Descriptions.Item label="Franchise Certificate URL">
               {franchiseData.franchiseCertificateUrl ? (
                 <>
