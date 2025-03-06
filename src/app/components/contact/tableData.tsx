@@ -18,7 +18,7 @@ interface ContactType {
   email: string;
   message: string;
   status: number;
-  created_at: string;
+  created_at: string | Date;
 }
 
 export default function TableData({ users }: { users: ContactType[] }) {

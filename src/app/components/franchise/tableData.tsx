@@ -17,9 +17,9 @@ interface FranchiseRecord {
   email: string;
   address: string;
   mobileNumber: string;
-  createdAt: string;
+  createdAt: string | Date;
   Status: number;
-  franchiseId?: string;
+  franchiseId?: string | null;
 }
 
 export default function TableData({ records }: { records: FranchiseRecord[] }) {

@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export default async function Home() {
   try {
-    const users = await prisma.ContactUs.findMany({
+    const users = await prisma.contactUs.findMany({
       orderBy: {
         created_at: "desc", // Fetch newest entries first
       },

@@ -5,12 +5,11 @@ const prisma = new PrismaClient();
 
 export default async function Home() {
   try {
-    const franchises = await prisma.FranchiseRecord.findMany({
+    const franchises = await prisma.franchiseRecord.findMany({
       orderBy: {
         createdAt: "desc", // Fetch newest entries first
       },
     });
-
     return <TableData records={franchises} />;
   } catch (error) {
     return <p>No record found.</p>;

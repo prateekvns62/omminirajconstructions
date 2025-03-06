@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `contact_us_reply` ADD COLUMN `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3);

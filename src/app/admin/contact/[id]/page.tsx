@@ -11,14 +11,14 @@ export default async function UserDetailPage({ params }: { params: { id: string 
     
     if (isNaN(userId)) return <p className="text-red-500 text-center">Invalid Form ID</p>;
 
-    const user = await prisma.ContactUs.findUnique({
+    const user = await prisma.contactUs.findUnique({
       where: { id: userId },
     });
 
     if (!user) return <p className="text-red-500 text-center">Contact Us Detail not found</p>;
 
     if (user.status === 1) {
-      await prisma.ContactUs.update({
+      await prisma.contactUs.update({
         where: { id: userId },
         data: { status: 0 },
       });
@@ -28,7 +28,10 @@ export default async function UserDetailPage({ params }: { params: { id: string 
       where: { contact_us_id: userId },
     });
 
-    return <FormData user={user} adminReply={adminReply} />;
+    const contactUsReplyOnce = process.env.CONTACTUS_REPLY_ONCE === "1";
+
+    return <FormData user={user} adminReply={adminReply} contactUsReplyOnce={contactUsReplyOnce} />;
+
   } catch (error) {
     console.error("Error fetching user details:", error);
     return <p className="text-red-500 text-center">Something went wrong. Please try again later.</p>;

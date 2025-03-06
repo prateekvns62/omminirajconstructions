@@ -48,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             Status: status,
             updatedAt: now,
             franchiseCertificateUrl: status === 2 ? null : franchiseCertificateUrl,
-            ...(gstNumber && {gstNumber}),
+            gstNumber: status === 2 ? null : gstNumber,
           },
         });
   
