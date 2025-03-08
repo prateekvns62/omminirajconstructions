@@ -1,11 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import TableData from "@/app/components/contact/tableData";
+import TableData from "@/app/components/profile/tableData";
 
 const prisma = new PrismaClient();
 
-export default async function Home() {
+export default async function Contact() {
   try {
-    const users = await prisma.contactUs.findMany({
+    const users = await prisma.user.findMany({
       orderBy: {
         created_at: "desc", // Fetch newest entries first
       },

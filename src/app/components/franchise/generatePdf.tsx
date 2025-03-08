@@ -72,20 +72,21 @@ const generatePDF = async (franchise:franchise,values:values) : Promise<string> 
   });
 
   // Franchisee Name
-  const ftextWidth = timesBoldFont.widthOfTextAtSize(franchise.name, 20);
-  page.drawText(franchise.name.toUpperCase(), {
-    x: (width / 2) - (ftextWidth/2) -2,
+  const fname = franchise.name.toUpperCase();
+  const ftextWidth = timesBoldFont.widthOfTextAtSize(fname, 20);
+  page.drawText(fname, {
+    x: (width-ftextWidth)/2,
     y: height - 333,
     size: 20,
     font:timesBoldFont,
   });
 
   // Separator Line
-  const dtextWidth = timesBoldFont.widthOfTextAtSize("---------------------------------------------", 14);
+  const dtextWidth = timesBoldFont.widthOfTextAtSize("---------------------------------------------", 20);
   page.drawText("---------------------------------------------", {
     x: (width / 2) - (dtextWidth/2),
     y: height - 353,
-    size: 14,
+    size: 20,
     font: timesFont,
   });
 
@@ -151,10 +152,6 @@ const generatePDF = async (franchise:franchise,values:values) : Promise<string> 
 
   const pdfBytes = await pdfDoc.save();
   
-  //For direct saving the PDF on system testing perpose
-  //const blob = new Blob([pdfBytes], { type: "application/pdf" });
-  //saveAs(blob, `Franchise_Certificate_${franchise.id}.pdf`);
-
   // Send PDF to API route for saving
   const response = await fetch("/api/upload-pdf", {
     method: "POST",

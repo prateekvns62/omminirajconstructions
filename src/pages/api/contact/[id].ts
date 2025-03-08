@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: "ID is required" });
       }
 
-      await prisma.ContactUs.delete({
+      await prisma.contactUs.delete({
         where: { id: Number(id) },
       });
 

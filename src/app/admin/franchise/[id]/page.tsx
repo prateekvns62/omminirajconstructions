@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function UserDetailPage({ params }: { params: { id: string } }) {
+export default async function FranchiseDetailPage({ params }: { params: { id: string } }) {
   try {
     const { id } = params;
     const franchiseId = parseInt(id, 10);

@@ -3,7 +3,7 @@ import TableData from "@/app/components/contact/tableData";
 
 const prisma = new PrismaClient();
 
-export default async function Home() {
+export default async function Contact() {
   try {
     const users = await prisma.contactUs.findMany({
       orderBy: {

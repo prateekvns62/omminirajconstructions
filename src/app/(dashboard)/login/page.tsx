@@ -1,22 +1,31 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
 
-    // Perform login logic here (e.g., API request)
-    // On success, set a cookie or session indicating the user is logged in
-    document.cookie = "userToken=yourToken; path=/";
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
-    // Redirect to admin dashboard
-    router.push("/admin/dashboard");
+    if (res?.error) {
+      setError("Invalid credentials or Account disabled!");
+      return;
+    }
+
+    router.replace("/admin");
   };
 
   return (
@@ -32,11 +41,12 @@ const LoginPage = () => {
         <p className="text-center mb-6 text-gray-600">
           Enter your credentials to continue
         </p>
+        {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <input
-              type="email"
-              placeholder="Email"
+              type="string"
+              placeholder="Username or Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -69,7 +79,7 @@ const LoginPage = () => {
               </label>
             </div>
             <div>
-              <a href="/dashboard/forgot-password" className="text-blue-600 text-sm hover:underline">
+              <a href="/forgot-password" className="text-blue-600 text-sm hover:underline">
                 Forgot Password?
               </a>
             </div>
@@ -92,6 +102,6 @@ const LoginPage = () => {
   );
 };
 
-export default function Home() {
+export default function Loginpage() {
   return <LoginPage />;
 }

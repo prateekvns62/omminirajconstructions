@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 import "./globals.css";
 import AdminLayout from "../components/admin/dashboardLayout";
 
@@ -15,21 +19,26 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Om Miniraj Building &amp; Construction Services Private Limited",
-  description: "Welcome to Om Miniraj Building and Construction Services Private Limited, your trusted partner in the world of construction and infrastructure development in India.",
+  description:
+    "Welcome to Om Miniraj Building and Construction Services Private Limited, your trusted partner in the world of construction and infrastructure development in India.",
 };
 
-export default function RootLayout({
+export default async function AdminRootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  // Fetch the current session
+  const session = await getServerSession(authOptions);
+
+  // If no session, redirect to login page
+  if (!session) {
+    redirect("/login");
+  }
+
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <AdminLayout>{children}</AdminLayout>
-      </body>
-    </html>
+    <div className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <AdminLayout>{children}</AdminLayout>
+    </div>
   );
 }

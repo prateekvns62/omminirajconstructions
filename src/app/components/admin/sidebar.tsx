@@ -129,14 +129,13 @@ const menuItems = [
             { name: "Add Certificate", path: "/admin/certificates/add" },
         ],
     },
-    { 
+    {
         name: "Admin Users", 
         path: "/admin/users", 
         icon: <Users size={18} color="navy" />,
         subMenu: [
-            { name: "All Users", path: "/admin/users/all" },
-            { name: "Add User", path: "/admin/users/add" },
-            { name: "User Roles", path: "/admin/users/roles" },
+            { name: "All Users", path: "/admin/profile/all" },
+            { name: "Add User", path: "/admin/profile/add" },
         ],
     },
     { 
