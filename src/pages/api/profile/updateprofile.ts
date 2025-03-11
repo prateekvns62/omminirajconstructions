@@ -46,6 +46,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data: updateData,
     });
 
+    if (newPassword && typeof newPassword === "string" && newPassword.trim() !== "") {
+      await prisma.passwordResetToken.deleteMany({ where: { email:updatedUser.email } });
+    }
+    
     return res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Error updating profile:", error);

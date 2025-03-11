@@ -4,11 +4,14 @@ import Link from "next/link";
 import { signOut } from "next-auth/react"; // Import signOut from NextAuth
 import { User, Search, Settings, Key, LogOut } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 const HeaderLayout = () => {
   const [searchText, setSearchText] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [greeting, setGreeting] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -20,6 +23,11 @@ const HeaderLayout = () => {
       setGreeting("Good Evening");
     }
   }, []);
+
+  const handleLogout = async () => {
+    setLoading(true);
+    await signOut({ callbackUrl: "/login" });
+  };
 
   return (
     <header className="w-full bg-white p-4">
@@ -68,7 +76,7 @@ const HeaderLayout = () => {
                 Change Password
               </Link>
               <button
-                onClick={() => signOut({ callbackUrl: "/login" })} // Logout Logic
+                onClick={handleLogout} // Logout Logic
                 className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100"
               >
                 <LogOut size={18} className="mr-2 text-red-500" />
@@ -78,6 +86,11 @@ const HeaderLayout = () => {
           )}
         </div>
       </div>
+      {loading && (
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin shadow-lg"></div>
+        </div>
+      )}
     </header>
   );
 };

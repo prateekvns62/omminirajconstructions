@@ -13,58 +13,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model user {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
-  username String @unique
-  password String
-  status Int @default(1)
-  created_at DateTime @default(now())
-  last_login DateTime @default(now())
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  email              String               @unique
+  username           String               @unique
+  password           String
+  status             Int                  @default(1)
+  created_at         DateTime             @default(now())
+  last_login         DateTime             @default(now())
+  passwordResetToken passwordResetToken[]
 }
 
 model contactUs {
-  id            Int @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   name          String
   mobile_number String
   email         String
   message       String
   created_at    DateTime @default(now())
   updated_at    DateTime @default(now())
-  status        Int @default(1)
+  status        Int      @default(1)
+
   @@map("contact_us")
 }
 
 model contactUsReply {
-  id             Int @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   contact_us_id Int
   message       String
-  created_at DateTime @default(now())
+  created_at    DateTime @default(now())
+
   @@map("contact_us_reply")
 }
 
 model franchiseRecord {
-  id                        Int     @id @default(autoincrement())
-  name                      String
-  email                     String
-  address                   String
-  doYouHave                 String
-  mobileNumber              String
-  message                   String
-  gstNumber                 String?
-  franchiseId               String?
-  franchiseCertificateUrl   String?
-  aadhaarCardNumber         String
-  accountNumber             String
-  ifscCode                  String
-  passbookCopy              String
-  panCardCopy               String
-  aadharFrontCopy           String
-  aadharBackCopy            String
-  createdAt                 DateTime @default(now())
-  updatedAt                 DateTime @default(now())
-  Status                    Int @default(0)
+  id                      Int      @id @default(autoincrement())
+  name                    String
+  email                   String
+  address                 String
+  doYouHave               String
+  mobileNumber            String
+  message                 String
+  gstNumber               String?
+  franchiseId             String?
+  franchiseCertificateUrl String?
+  aadhaarCardNumber       String
+  accountNumber           String
+  ifscCode                String
+  passbookCopy            String
+  panCardCopy             String
+  aadharFrontCopy         String
+  aadharBackCopy          String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @default(now())
+  Status                  Int      @default(0)
+
   @@map("franchise_record")
+}
+
+model passwordResetToken {
+  id      Int      @id @default(autoincrement())
+  user_id Int
+  email   String   @unique
+  token   String   @unique
+  expires DateTime
+
+  // Foreign key relation (assuming you have a User model)
+  user user @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([email, token])
 }

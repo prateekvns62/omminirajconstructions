@@ -1,18 +1,43 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import "@ant-design/v5-patch-for-react-19";
+import { message } from "antd";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  var successmessage = searchParams?.get("successmessage");
+  var errormessage = searchParams?.get("errormessage");
+
+  useEffect(() => {
+    if (successmessage) {
+      message.success(successmessage);
+      
+    } 
+
+    if(errormessage){
+      message.error(errormessage);
+    }
+
+    if (successmessage || errormessage) {
+      successmessage = null;
+      errormessage = null;
+      const currentPath = window.location.pathname;
+      router.replace(currentPath, { scroll: false });
+    }
+  }, [successmessage, errormessage]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     const res = await signIn("credentials", {
       email,
@@ -22,20 +47,26 @@ const LoginPage = () => {
 
     if (res?.error) {
       setError("Invalid credentials or Account disabled!");
+      setLoading(false);
       return;
     }
-
+    setLoading(false);
     router.replace("/admin");
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96 border border-gray-300">
+      {loading && (
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-none flex justify-center items-center z-50">
+          <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin shadow-lg"></div>
+        </div>
+      )}
+      <div className="bg-white p-8 rounded-lg shadow-lg w-120 border border-gray-300">
         <img
           src="/logo.jpg"
           alt="Logo"
-          width={100}
-          height={61}
+          width={200}
+          height={128}
           className="mx-auto mb-6"
         />
         <p className="text-center mb-6 text-gray-600">
