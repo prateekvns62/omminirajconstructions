@@ -98,13 +98,13 @@ export default function TableData({ records }: { records: FranchiseRecord[] }) {
   });
 
   const columns: ColumnsType<FranchiseRecord> = [
-    { title: "Name", dataIndex: "name", width: 150 },
-    { title: "Email", dataIndex: "email", width: 200 },
-    { title: "Mobile", dataIndex: "mobileNumber", width: 120 },
+    { title: "Name", dataIndex: "name", sorter: (a, b) => a.name.localeCompare(b.name), width: 150 },
+    { title: "Email", dataIndex: "email",sorter: (a, b) => a.email.localeCompare(b.email), width: 200 },
+    { title: "Mobile", dataIndex: "mobileNumber", sorter: (a, b) => a.mobileNumber.localeCompare(b.mobileNumber), width: 120 },
     { title: "Address", dataIndex: "address", width: 250 },
     { title: "Franchise ID", dataIndex: "franchiseId", width: 150 },
-    { title: "Status", dataIndex: "Status", render: getStatusTag, width: 150 },
-    { title: "Created At", dataIndex: "createdAt", render: (createdAt) => format(new Date(createdAt), "dd MMM yyyy, hh:mm a"), width: 180 },
+    { title: "Status", dataIndex: "Status", render: getStatusTag,sorter: (a, b) => a.Status - b.Status, width: 150 },
+    { title: "Created At", dataIndex: "createdAt",sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(), render: (createdAt) => format(new Date(createdAt), "dd MMM yyyy, hh:mm a"), width: 180 },
     {
       title: "Actions",
       render: (_, record) => (

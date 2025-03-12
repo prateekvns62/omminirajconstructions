@@ -1,42 +1,83 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
+import "@ant-design/v5-patch-for-react-19";
+import { message } from "antd";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepLoggedIn, setKeepLoggedIn] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  var successmessage = searchParams?.get("successmessage");
+  var errormessage = searchParams?.get("errormessage");
+
+  useEffect(() => {
+    if (successmessage) {
+      message.success(successmessage);
+      
+    } 
+
+    if(errormessage){
+      message.error(errormessage);
+    }
+
+    if (successmessage || errormessage) {
+      successmessage = null;
+      errormessage = null;
+      const currentPath = window.location.pathname;
+      router.replace(currentPath, { scroll: false });
+    }
+  }, [successmessage, errormessage]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    // Perform login logic here (e.g., API request)
-    // On success, set a cookie or session indicating the user is logged in
-    document.cookie = "userToken=yourToken; path=/";
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
-    // Redirect to admin dashboard
-    router.push("/admin/dashboard");
+    if (res?.error) {
+      setError("Invalid credentials or Account disabled!");
+      setLoading(false);
+      return;
+    }
+    setLoading(false);
+    router.replace("/admin");
   };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96 border border-gray-300">
+      {loading && (
+        <div className="absolute inset-0 bg-white/30 backdrop-blur-none flex justify-center items-center z-50">
+          <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin shadow-lg"></div>
+        </div>
+      )}
+      <div className="bg-white p-8 rounded-lg shadow-lg w-120 border border-gray-300">
         <img
           src="/logo.jpg"
           alt="Logo"
-          width={100}
-          height={61}
+          width={200}
+          height={128}
           className="mx-auto mb-6"
         />
         <p className="text-center mb-6 text-gray-600">
           Enter your credentials to continue
         </p>
+        {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
             <input
-              type="email"
-              placeholder="Email"
+              type="string"
+              placeholder="Username or Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -69,7 +110,7 @@ const LoginPage = () => {
               </label>
             </div>
             <div>
-              <a href="/dashboard/forgot-password" className="text-blue-600 text-sm hover:underline">
+              <a href="/forgot-password" className="text-blue-600 text-sm hover:underline">
                 Forgot Password?
               </a>
             </div>
@@ -92,6 +133,6 @@ const LoginPage = () => {
   );
 };
 
-export default function Home() {
+export default function Loginpage() {
   return <LoginPage />;
 }

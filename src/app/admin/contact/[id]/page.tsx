@@ -3,7 +3,7 @@ import FormData from "@/app/components/contact/formData";
 
 const prisma = new PrismaClient();
 
-export default async function UserDetailPage({ params }: { params: { id: string } }) {
+export default async function ContactDetailPage({ params }: { params: { id: string } }) {
   try {
     const { id } = params;  // No need to await params
 

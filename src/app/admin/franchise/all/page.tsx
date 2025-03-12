@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function Home() {
+export default async function Franchise() {
   try {
     const franchises = await prisma.franchiseRecord.findMany({
       orderBy: {

@@ -40,14 +40,17 @@ const Sidebar = () => {
       return { [menuName]: !isAlreadyOpen }; // Close all other menus
     });
   };
-
-  const handleMenuClick = (title: string) => {
-    localStorage.setItem("pageTitle", title);
-  };
   
 const menuItems = [
     { name: "Contact Us", path: "/admin/contact", icon: <Phone size={18} color="blue" /> },
-    { name: "Booking Form", path: "/admin/booking-form", icon: <FileText size={18} color="green" /> },
+    { name: "Booking Form",
+      path: "/admin/booking-form",
+      icon: <FileText size={18} color="green" />,
+      subMenu: [
+        { name: "All Booking", path: "/admin/booking-form" },
+        { name: "Add Booking", path: "/admin/booking-form/add" },
+      ],
+    },
     {
         name: "Franchise Booking",
         path: "/admin/franchise",
@@ -129,14 +132,13 @@ const menuItems = [
             { name: "Add Certificate", path: "/admin/certificates/add" },
         ],
     },
-    { 
+    {
         name: "Admin Users", 
         path: "/admin/users", 
         icon: <Users size={18} color="navy" />,
         subMenu: [
-            { name: "All Users", path: "/admin/users/all" },
-            { name: "Add User", path: "/admin/users/add" },
-            { name: "User Roles", path: "/admin/users/roles" },
+            { name: "All Users", path: "/admin/profile/all" },
+            { name: "Add User", path: "/admin/profile/add" },
         ],
     },
     { 
@@ -158,8 +160,7 @@ return (
       <ul>
         <li>
           <Link 
-            href="/admin" 
-            onClick={() => handleMenuClick("Dashboard")}
+            href="/admin"
             className="flex items-center gap-2 p-3 mb-3 font-semibold border-b border-black hover:text-black-500"
           >
             <span>Dashboard</span>
@@ -184,7 +185,6 @@ return (
             ) : (
               <Link 
                 href={item.path} 
-                onClick={() => handleMenuClick(item.name)}
                 className={`flex items-center gap-2 p-2 w-full rounded-md hover:bg-gray-200 transition ${
                   pathname.startsWith(item.path) ? "bg-gray-400 text-white" : ""
                 }`}
@@ -200,7 +200,6 @@ return (
                   <li key={subItem.path} className="mb-2">
                     <Link 
                       href={subItem.path} 
-                      onClick={() => handleMenuClick(subItem.name)}
                       className={`block p-2 text-md rounded-md hover:bg-gray-200 transition ${
                         pathname.startsWith(subItem.path) ? "bg-gray-400 text-white" : ""
                       }`}
