@@ -1,17 +1,21 @@
+import TableData from "@/app/components/booking/tableData";
 import { PrismaClient } from "@prisma/client";
-import TableData from "@/app/components/contact/tableData";
 
 const prisma = new PrismaClient();
 
 export default async function Home() {
   try {
-    const users = await prisma.contactUs.findMany({
+    const booking = await prisma.booking.findMany({
       orderBy: {
-        created_at: "desc", // Fetch newest entries first
+        createdAt: "desc",
+      },
+      include: {
+        paymentDetails: true,
       },
     });
 
-    return <TableData users={users} />;
+    return <TableData booking={booking} />;
+    
   } catch (error) {
     return <p>No record found.</p>;
   } finally {

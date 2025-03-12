@@ -43,7 +43,14 @@ const Sidebar = () => {
   
 const menuItems = [
     { name: "Contact Us", path: "/admin/contact", icon: <Phone size={18} color="blue" /> },
-    { name: "Booking Form", path: "/admin/booking-form", icon: <FileText size={18} color="green" /> },
+    { name: "Booking Form",
+      path: "/admin/booking-form",
+      icon: <FileText size={18} color="green" />,
+      subMenu: [
+        { name: "All Booking", path: "/admin/booking-form" },
+        { name: "Add Booking", path: "/admin/booking-form/add" },
+      ],
+    },
     {
         name: "Franchise Booking",
         path: "/admin/franchise",
