@@ -91,7 +91,7 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
     });
   };
 
-  const handleEdit = (id: number) => router.push(`/admin/booking/${id}`);
+  const handleEdit = (id: number) => router.push(`/admin/booking-form/${id}`);
 
   const filteredData = tableData.filter((item) => 
     item.name.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -100,11 +100,9 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
 
   const columns: ColumnsType<BookingType> = [
     { title: "Booking ID", dataIndex: "bookingId", width: 150 },
-    { title: "Name", dataIndex: "name", width: 150 },
-    { title: "Email", dataIndex: "email", width: 200 },
-    { title: "Aadhaar Card Number", dataIndex: "aadhaarCardNumber", width: 180 },
+    { title: "Name", dataIndex: "name", width: 250 },
+    { title: "Email", dataIndex: "email", width: 250 },
     { title: "Work By", dataIndex: "workBy", width: 150 },
-    { title: "Work Through", dataIndex: "workThrough", width: 150 },
     { title: "Area", dataIndex: "area", width: 100 },
     { title: "Amount", dataIndex: "plotSize", render: (plotSize: string) => `${plotSize} INR`, width: 120 },
     { title: "Created At", dataIndex: "createdAt", render: (date) => format(new Date(date), "dd MMM yyyy, hh:mm a"), width: 180 },

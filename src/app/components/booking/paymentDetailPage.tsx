@@ -91,7 +91,7 @@ export default function PaymentDetailPage({ booking }: { booking: BookingType })
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
             <div>
-            <div className="flex justify-end w-full"><Button onClick={downloadPDF} className="bg-blue-600 text-white px-4 py-2 rounded mt-4">Download Invoice</Button></div>
+            <div className="flex justify-end w-full mb-4 mr-1" ><Button onClick={downloadPDF} className="bg-blue-600 text-white px-4 py-2 rounded mt-4">Download Invoice</Button></div>
             <div ref={cardRef} className="w-full max-w-2xl sm:w-200">
                 <Card className="bg-white shadow-lg rounded-2xl p-6 border border-gray-300">
                     <CardHeader>
