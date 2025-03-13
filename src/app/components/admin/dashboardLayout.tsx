@@ -4,6 +4,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Sidebar from "./sidebar";
 import HeaderLayout from "./header";
+import FooterLayout from "./footer";
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname() || "/dashboard"; // Ensure a default value
@@ -37,6 +38,8 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
           <div className="mt-6">{children}</div>
         </main>
       </div>
+      {/* Footer */}
+      <FooterLayout />
     </div>
   );
 };

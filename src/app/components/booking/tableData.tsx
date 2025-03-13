@@ -1,6 +1,6 @@
 "use client";
 import { Table, Input, Select, Button, Tag, Modal, Tooltip, DatePicker, Skeleton, message } from "antd";
-import { SearchOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined, ClockCircleOutlined, SyncOutlined, CheckCircleOutlined } from "@ant-design/icons";
+import { SearchOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined, ClockCircleOutlined, SyncOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -8,6 +8,7 @@ import { format, isWithinInterval, parseISO } from "date-fns";
 import '@ant-design/v5-patch-for-react-19';
 import type { TablePaginationConfig } from "antd/es/table";
 import PageTitle from "../admin/pagetitle";
+import Loader from "../admin/loader";
 
 const { RangePicker } = DatePicker;
 
@@ -40,9 +41,11 @@ interface PaymentDetailsType {
 
 export default function TableData({ booking }: { booking: BookingType[] }) {
   const [searchText, setSearchText] = useState<string>("");
+  const [filteredStatus, setFilteredStatus] = useState<number | null>(null);
   const [tableData, setTableData] = useState<BookingType[]>([]);
   const [dateRange, setDateRange] = useState<[string | null, string | null]>([null, null]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 20,
@@ -58,6 +61,7 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
   }, [booking]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value);
+  const handleStatusFilterChange = (value: number | null) => setFilteredStatus(value ?? null);
   const handleDateRangeChange = (dates: any) => {
     if (!dates || !dates[0] || !dates[1]) {
         setDateRange([null, null]);
@@ -77,6 +81,7 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
       okText: "Yes, Delete",
       cancelText: "Cancel",
       onOk: async () => {
+        setIsLoading(true);
         try {
           const response = await fetch(`/api/booking/${id}`, { method: "DELETE" });
           if (response.ok) {
@@ -87,17 +92,34 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
           }
         } catch (error) {
           message.error("An error occurred while deleting the record");
+        } finally {
+          setIsLoading(false);
         }
       },
     });
   };
 
-  const handleEdit = (id: number) => router.push(`/admin/booking-form/${id}`);
+  const handleEdit = (id: number) => {
+    setIsLoading(true);
+    router.push(`/admin/booking-form/${id}`);
+  }
 
-  const filteredData = tableData.filter((item) => 
-    item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-    item.email.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredData = tableData.filter((item) => {
+    return (
+      (searchText.trim() === "" || 
+        item.name.toLowerCase().includes(searchText.toLowerCase()) || 
+        item.email.toLowerCase().includes(searchText.toLowerCase())
+      ) &&
+      (filteredStatus === null || item.status === filteredStatus) &&
+      (!dateRange[0] || !dateRange[1] || 
+        isWithinInterval(
+          parseISO(format(new Date(item.createdAt), "yyyy-MM-dd")), 
+          { start: new Date(dateRange[0]), end: new Date(dateRange[1]) }
+        )
+      )
+    );
+  });
+  
 
   const getStatusTag = (status: number) => {
     switch (status) {
@@ -109,6 +131,8 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
         return <Tag icon={<CheckCircleOutlined />} color="green">Completed</Tag>;
       case 3:
         return <Tag icon={<ExclamationCircleOutlined />} color="red">Payment Pending</Tag>;
+      case 4:
+          return <Tag icon={<CloseCircleOutlined />} color="red">Rejected</Tag>;
       default:
         return <Tag color="default">Unknown</Tag>;
     }
@@ -147,6 +171,7 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
             <Select.Option value={1}>In Progress</Select.Option>
             <Select.Option value={2}>Completed</Select.Option>
             <Select.Option value={3}>Pending Payment</Select.Option>
+            <Select.Option value={4}>Rejected</Select.Option>
           </Select>
           <RangePicker onChange={handleDateRangeChange} className="w-1/3" />
         </div>
@@ -169,6 +194,7 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
           />
         )}
       </div>
+        {isLoading && (<Loader/>)}
     </div>
   );
 }

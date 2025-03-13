@@ -2,10 +2,11 @@
 import { useState, useEffect } from "react";
 import { Descriptions, Tag, Button, Modal, message,Skeleton, Card, Image } from "antd";
 import { format } from "date-fns";
-import { DownloadOutlined, CheckCircleOutlined, MailOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { DownloadOutlined, CheckCircleOutlined, MailOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import '@ant-design/v5-patch-for-react-19';
 import { usePathname, useRouter } from "next/navigation";
 import PageTitle from "../admin/pagetitle";
+import Loader from "../admin/loader";
 
 const isImage = (url:any) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
 const isPDF = (url:any) => /\.pdf$/i.test(url);
@@ -56,17 +57,20 @@ const getStatusTag = (status: string) => {
 };
 
 const getBookingStatusTag = (status: number) => {
+  const tagStyle = { fontSize: "15px", padding: "2px 12px" };
   switch (status) {
     case 0:
-      return <Tag icon={<ClockCircleOutlined />} color="blue">Submitted</Tag>;
+      return <Tag icon={<ClockCircleOutlined />} color="blue" style={tagStyle}>Submitted</Tag>;
     case 1:
-      return <Tag icon={<SyncOutlined spin />} color="orange">In Progress</Tag>;
+      return <Tag icon={<SyncOutlined spin />} color="orange" style={tagStyle}>In Progress</Tag>;
     case 2:
-      return <Tag icon={<CheckCircleOutlined />} color="green">Completed</Tag>;
+      return <Tag icon={<CheckCircleOutlined />} color="green" style={tagStyle}>Completed</Tag>;
     case 3:
-      return <Tag icon={<ExclamationCircleOutlined />} color="red">Payment Pending</Tag>;
+      return <Tag icon={<ExclamationCircleOutlined />} color="red" style={tagStyle}>Payment Pending</Tag>;
+    case 4:
+        return <Tag icon={<CloseCircleOutlined />} color="red" style={tagStyle}>Rejected</Tag>;
     default:
-      return <Tag color="default">Unknown</Tag>;
+      return <Tag color="default" style={tagStyle}>Unknown</Tag>;
   }
 };
 
@@ -74,6 +78,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
   const [bookingData, setBookingData] = useState<BookingType>(booking);
   const [paymentData, setPaymentData] = useState<PaymentDetailsType | null>(booking.paymentDetails ?? null);
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname() || "/admin";
   const [previousUrl, setPreviousUrl] = useState<string | null>(null);
@@ -147,6 +152,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
       title: "Send Email?",
       content: "Are you sure you want to send this email?",
       onOk: async () => {
+        setLoading(true);
         try {
           const response = await fetch(`/api/booking/sendEmail`, {
             method: "POST",
@@ -163,10 +169,88 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
           }
         } catch (error) {
           message.error("An error occurred while sending the email.");
+        } finally {
+          setLoading(false);
         }
       },
     });
   };
+
+  const updateStatus = async (status: any) => {
+    if (!bookingData?.id) {
+        message.error("Booking ID is missing.");
+        return;
+    }
+    Modal.confirm({
+        title: "Update Status",
+        content: "Are you sure you want to update the status?",
+        onOk: async () => {
+            try {
+                setLoading(true);
+                const response = await fetch(`/api/booking/updateStatus`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ id: bookingData.id, status }), // Using bookingData.id directly
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    message.success(result.message || "Status updated successfully!");
+                    fetchBookingDetails(bookingData.id);
+                } else {
+                    message.error(result.message || "Failed to update status.");
+                }
+            } catch (error) {
+                message.error("An error occurred while updating the status.");
+            } finally {
+              setLoading(false);
+            }
+        },
+      });
+    };
+
+    const fetchBookingDetails = async (id: number) => {
+      try {
+        const response = await fetch(`/api/booking/${id}`, {
+          method: "GET",
+        });
+
+        const updatedData = await response.json();
+        
+        setBookingData(updatedData.record);
+        setPaymentData(updatedData.record.paymentDetails ?? null);
+      } catch (error) {
+        console.error("Error fetching updated booking details:", error);
+      }
+    };
+
+    const handleDelete = async (id: number) => {
+      Modal.confirm({
+        title: "Are you sure you want to delete this record?",
+        icon: <ExclamationCircleOutlined />,
+        content: "This action cannot be undone.",
+        okText: "Yes, Delete",
+        cancelText: "Cancel",
+        onOk: async () => {
+          setLoading(true);
+          try {
+            const response = await fetch(`/api/booking/${id}`, { method: "DELETE" });
+            if (response.ok) {
+              message.success("Record deleted successfully");
+              router.push("/admin/booking-form");
+            } else {
+              message.error("Failed to delete record");
+            }
+          } catch (error) {
+            message.error("An error occurred while deleting the record");
+          } finally {
+            setLoading(false);
+          }
+        },
+      });
+    };
+    
 
   const handleBack = () => {
     let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
@@ -215,13 +299,57 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
             {/* Show the button if paymentData is missing or payment is not successful */}
             {!paymentData || paymentData.status !== "SUCCESS" ? (
                 <Button type="primary"
+                  size="large"
+                  className="bg-blue-500 text-white h-[60px] text-xl font-semibold rounded-lg shadow-md transition-all duration-300 hover:bg-blue-600 hover:shadow-lg flex items-center justify-center"
+                  icon={<MailOutlined />}
+                  onClick={() => handleSendEmail()}>
+                    Send Payment Reminder
+                  </Button>
+                ) : null}
+
+              { bookingData!.status == 0 && (
+                <Button type="primary"
                 size="large"
-                className="bg-blue-500 text-white h-[60px] text-xl font-semibold rounded-lg shadow-md transition-all duration-300 hover:bg-blue-600 hover:shadow-lg flex items-center justify-center"
-                icon={<MailOutlined />}
-                onClick={() => handleSendEmail()}>
-                  Send Payment Reminder
+                className="bg-orange-500 hover:bg-orange-600 text-white h-[60px] text-xl font-semibold rounded-lg shadow-md transition-all duration-300 hover:shadow-lg flex items-center justify-center"
+                icon={<SyncOutlined />}
+                onClick={() => updateStatus(1)}>
+                  Mark In Progress
                 </Button>
-              ) : null}
+              )}
+
+              { bookingData!.status == 1 && (
+                <Button type="primary"
+                size="large"
+                className="bg-red-500 hover:bg-green-600 text-white h-[60px] text-xl font-semibold rounded-lg shadow-md transition-all duration-300 hover:shadow-lg flex items-center justify-center"
+                icon={<CheckCircleOutlined />}
+                onClick={() => updateStatus(2)}>
+                  Mark as Completed
+                </Button>
+              )}
+              { bookingData!.status != 4 && (
+                <Button
+                  type="primary"
+                  size="large"
+                  danger
+                  className="bg-red-500 text-white w-[160px] h-[56px] text-xl font-semibold rounded-lg shadow-md transition-all duration-300 hover:bg-red-600 hover:shadow-lg flex items-center justify-center"
+                  icon={<CloseCircleOutlined />}
+                  onClick={() => updateStatus(4)}>
+                  Reject
+                </Button>
+              )}
+
+              { bookingData!.status == 4 && (
+                <Button
+                  type="primary"
+                  size="large"
+                  danger
+                  className="bg-red-500 text-white w-[160px] h-[56px] text-xl font-semibold rounded-lg shadow-md transition-all duration-300 hover:bg-red-600 hover:shadow-lg flex items-center justify-center"
+                  icon={<CloseCircleOutlined />}
+                  onClick={() => handleDelete(bookingData.id)}>
+                  Delete
+                </Button>
+              )}
+              
           </div>
         </div>
         <div>
@@ -301,6 +429,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
           </Descriptions>
         </div>
       </div>
+      {loading && (<Loader/>)}
     </div>
   );
 }

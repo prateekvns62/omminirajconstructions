@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import PageTitle from "../admin/pagetitle";
 import { useRouter } from "next/navigation";
 import { message } from "antd";
+import Loader from "../admin/loader";
 
 
 export default function FranchiseForm() {
@@ -188,6 +189,7 @@ export default function FranchiseForm() {
                     {/* No content needed here, just background */}
                 </div>
             </div>
+            {isLoading && (<Loader/>)}
         </div>
 
     );

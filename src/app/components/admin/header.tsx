@@ -4,7 +4,8 @@ import Link from "next/link";
 import { signOut } from "next-auth/react"; // Import signOut from NextAuth
 import { User, Search, Settings, Key, LogOut } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter,usePathname } from "next/navigation"; // Import useRouter
+import Loader from "./loader";
 
 const HeaderLayout = () => {
   const [searchText, setSearchText] = useState("");
@@ -12,6 +13,7 @@ const HeaderLayout = () => {
   const [greeting, setGreeting] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const pathname = usePathname() || "";
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -28,6 +30,18 @@ const HeaderLayout = () => {
     setLoading(true);
     await signOut({ callbackUrl: "/login" });
   };
+
+  const handleRedirect = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);    
+  };
+
+  useEffect(() => {
+    setLoading(false); // Stop loading when route changes
+  }, [pathname]);
 
   return (
     <header className="w-full bg-white p-4">
@@ -67,11 +81,11 @@ const HeaderLayout = () => {
               onMouseLeave={() => setIsOpen(false)}
               style={{ top: "100%" }}
             >
-              <Link href="/admin/profile" className="flex items-center px-4 py-2 hover:bg-gray-100">
+              <Link href="/admin/profile" className="flex items-center px-4 py-2 hover:bg-gray-100" onClick={handleRedirect}>
                 <User size={18} className="mr-2 text-blue-500" />
                 Profile
               </Link>
-              <Link href="/admin/profile/change-password" className="flex items-center px-4 py-2 hover:bg-gray-100">
+              <Link href="/admin/profile/change-password" className="flex items-center px-4 py-2 hover:bg-gray-100" onClick={handleRedirect}>
                 <Key size={18} className="mr-2 text-yellow-500" />
                 Change Password
               </Link>
@@ -87,9 +101,7 @@ const HeaderLayout = () => {
         </div>
       </div>
       {loading && (
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
-          <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin shadow-lg"></div>
-        </div>
+        <Loader/>
       )}
     </header>
   );

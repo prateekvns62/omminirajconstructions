@@ -9,7 +9,6 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
 
     const bookingId = parseInt(id, 10);
     
-    
     if (isNaN(bookingId)) return <p className="text-red-500 text-center">Invalid Booking ID</p>;
 
     const booking = await prisma.booking.findUnique({
@@ -19,7 +18,7 @@ export default async function BookingDetailPage({ params }: { params: { id: stri
       },
     });
 
-    if (!booking) return <p className="text-red-500 text-center">Contact Us Detail not found</p>;
+    if (!booking) return <p className="text-red-500 text-center">Booking Detail not found</p>;
 
     return <FormData booking={booking} />;
 

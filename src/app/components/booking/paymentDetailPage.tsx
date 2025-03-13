@@ -5,6 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Button } from '@/components/ui/button';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas-pro';
+import { Skeleton} from "antd";
+import '@ant-design/v5-patch-for-react-19';
+import Loader from '../admin/loader';
 
 interface BookingType {
     id: number;
@@ -42,6 +45,13 @@ interface PaymentDetailsType {
 export default function PaymentDetailPage({ booking }: { booking: BookingType }) {
     const cardRef = useRef<HTMLDivElement>(null);
     const [invoiceDate, setInvoiceDate] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (booking) {
+          setIsLoading(false);
+        }
+      }, [booking]);
 
     useEffect(() => {
         setInvoiceDate(
@@ -66,6 +76,7 @@ export default function PaymentDetailPage({ booking }: { booking: BookingType })
     };
 
     const downloadPDF = async () => {
+        setIsLoading(true);
         if (!cardRef.current) return;
     
         // Ensure colors are converted to supported formats
@@ -85,9 +96,8 @@ export default function PaymentDetailPage({ booking }: { booking: BookingType })
     
         pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
         pdf.save(`Invoice_${booking.bookingId}.pdf`);
+        setIsLoading(false);
     };
-    
-    
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
@@ -133,6 +143,7 @@ export default function PaymentDetailPage({ booking }: { booking: BookingType })
                 </Card>
             </div>
             </div>
+            { isLoading && (<Loader/>)}
         </div>
     );
 }

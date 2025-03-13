@@ -7,6 +7,7 @@ import '@ant-design/v5-patch-for-react-19';
 import { usePathname, useRouter } from "next/navigation";
 import PageTitle from "../admin/pagetitle";
 import generatePDF from "./generatePdf";
+import Loader from "../admin/loader";
 
 const isImage = (url:any) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
 const isPDF = (url:any) => /\.pdf$/i.test(url);
@@ -53,6 +54,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
   const [franchiseData, setFranchiseData] = useState<FranchiseRecord>(franchise);
   const [isApproveModalVisible, setApproveModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const router = useRouter();
   const pathname = usePathname() || "/admin";
@@ -127,6 +129,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
       title: "Send Email?",
       content: "Are you sure you want to send this email?",
       onOk: async () => {
+        setLoading(true);
         try {
           const response = await fetch(`/api/franchise/sendEmail`, {
             method: "POST",
@@ -143,6 +146,8 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
           }
         } catch (error) {
           message.error("An error occurred while sending the email.");
+        } finally {
+          setLoading(false);
         }
       },
     });
@@ -218,6 +223,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
   };
 
   const submitApproval = async (values: any) => {
+    setLoading(true);
     try {
       const { gstNumber } = values;
       // Generate PDF and get the URL
@@ -241,6 +247,8 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
       }
     } catch (error) {
       message.error("An error occurred while approving");
+    } finally {
+      setLoading(false);
     }
   };
   
@@ -250,6 +258,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
       title: "Are you sure you want to reject this request?",
       icon: <ExclamationCircleOutlined />,
       onOk: async () => {
+        setLoading(true);
         try {
           const response = await fetch(`/api/franchise/${franchise.id}`, {
             method: "POST",
@@ -263,6 +272,8 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
           }
         } catch (error) {
           message.error("An error occurred while rejecting");
+        } finally {
+          setLoading(false);
         }
       },
     });
@@ -273,6 +284,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
       title: "Are you sure you want to delete this record?",
       icon: <ExclamationCircleOutlined />,
       onOk: async () => {
+        setLoading(true);
         try {
           const response = await fetch(`/api/franchise/${franchiseData.id}`, { method: "DELETE" });
           if (response.ok) {
@@ -281,6 +293,8 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
           }
         } catch (error) {
           message.error("An error occurred while deleting the record");
+        } finally {
+          setLoading(false);
         }
       },
     });
@@ -493,6 +507,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             </Form>
           </Modal>
       </div>
+      {loading && (<Loader/>)}
     </div>
   );
 }

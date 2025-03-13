@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { message } from "antd";
 import PageTitle from "@/app/components/admin/pagetitle";
 import "@ant-design/v5-patch-for-react-19";
+import Loader from "../admin/loader";
 
 export default function AdminUserForm() {
     const [isLoading, setIsLoading] = useState(false);
@@ -245,6 +246,7 @@ export default function AdminUserForm() {
                     style={{ backgroundImage: "url('/franchise_form.jpg')" }}
                 />
             </div>
+            {isLoading && (<Loader/>)}
         </div>
     );
 }

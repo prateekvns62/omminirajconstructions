@@ -8,6 +8,7 @@ import { format, isWithinInterval, parseISO } from "date-fns";
 import '@ant-design/v5-patch-for-react-19';
 import type { TablePaginationConfig } from "antd/es/table";
 import PageTitle from "../admin/pagetitle";
+import Loader from "../admin/loader";
 
 const { RangePicker } = DatePicker;
 
@@ -29,6 +30,7 @@ export default function TableData({ records }: { records: FranchiseRecord[] }) {
   const [tableData, setTableData] = useState<FranchiseRecord[]>([]);
   const [dateRange, setDateRange] = useState<[string | null, string | null]>([null, null]);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 20,
@@ -71,6 +73,7 @@ export default function TableData({ records }: { records: FranchiseRecord[] }) {
       okText: "Yes, Delete",
       cancelText: "Cancel",
       onOk: async () => {
+        setIsLoading(true);
         try {
           const response = await fetch(`/api/franchise/${id}`, { method: "DELETE" });
           if (response.ok) {
@@ -81,12 +84,18 @@ export default function TableData({ records }: { records: FranchiseRecord[] }) {
           }
         } catch (error) {
           message.error("An error occurred while deleting the record");
+        } finally {
+          setIsLoading(false);
         }
       },
     });
   };
 
-  const handleEdit = (id: number) => router.push(`/admin/franchise/${id}`);
+  const handleEdit = (id: number) => {
+    setIsLoading(true);
+    router.push(`/admin/franchise/${id}`);
+  }
+
   const handleSelectChange = (keys: React.Key[]) => setSelectedRowKeys(keys.map((key) => key as number));
 
   const filteredData = tableData.filter((item) => {
@@ -144,6 +153,7 @@ export default function TableData({ records }: { records: FranchiseRecord[] }) {
               }} rowKey="id" onChange={handleTableChange} />
         )}
       </div>
+      {isLoading && (<Loader/>)}
     </div>
   );
 }

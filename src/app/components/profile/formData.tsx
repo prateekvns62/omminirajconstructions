@@ -2,8 +2,9 @@
 import { useState, useEffect } from "react";
 import { User } from "lucide-react";
 import "@ant-design/v5-patch-for-react-19";
-import { message } from "antd";
+import { message, Skeleton, Card } from "antd";
 import PageTitle from "../admin/pagetitle";
+import Loader from "../admin/loader";
 
 interface ProfileType {
   id: number;
@@ -35,6 +36,7 @@ const ProfilePage = ({ user }: { user: ProfileType | null }) => {
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -100,7 +102,7 @@ const ProfilePage = ({ user }: { user: ProfileType | null }) => {
         return;
       }
     }
-
+    setIsLoading(true);
     try {
       const res = await fetch("/api/profile/updateprofile", {
         method: "POST",
@@ -120,10 +122,25 @@ const ProfilePage = ({ user }: { user: ProfileType | null }) => {
       }
     } catch (error) {
       message.error("Something went wrong.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="p-6 bg-white shadow-md rounded-lg space-y-6">
+        <Skeleton active />
+        <Card className="p-4">
+          <Skeleton active paragraph={{ rows: 4 }} />
+        </Card>
+        <Card className="p-4">
+          <Skeleton active paragraph={{ rows: 3 }} />
+        </Card>
+      </div>
+    );
+  }
+
   if (!formData) return <div>No user data available</div>;
 
   return (
@@ -245,6 +262,7 @@ const ProfilePage = ({ user }: { user: ProfileType | null }) => {
           </div>
         </div>
       </div>
+      {isLoading && (<Loader/>)}
     </div>
   );
 };

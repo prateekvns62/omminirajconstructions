@@ -118,5 +118,5 @@ model paymentDetails {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  booking       booking @relation(fields: [bookingId], references: [bookingId])
+  booking       booking @relation(fields: [bookingId], references: [bookingId], onDelete: Cascade)
 }

@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import { 
     Home, 
     Users, 
@@ -20,10 +21,12 @@ import {
     Image, 
     Layers 
 } from "lucide-react";
+import Loader from "./loader";
 
 const Sidebar = () => {
   const pathname = usePathname() || "";
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     menuItems.forEach((item) => {
@@ -41,10 +44,22 @@ const Sidebar = () => {
     });
   };
   
+  const handleNavigation = () => {
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  };
+
+  useEffect(() => {
+    setLoading(false); // Stop loading when route changes
+  }, [pathname]);
+
 const menuItems = [
     { name: "Contact Us", path: "/admin/contact", icon: <Phone size={18} color="blue" /> },
     { name: "Booking Form",
-      path: "/admin/booking-form",
+      path: "/admin/booking",
       icon: <FileText size={18} color="green" />,
       subMenu: [
         { name: "All Booking", path: "/admin/booking-form" },
@@ -155,14 +170,12 @@ const menuItems = [
 
 
 return (
+  <>
   <aside className="w-64 bg-white text-gray-800 h-full p-4 shadow-md">
     <nav>
       <ul>
         <li>
-          <Link 
-            href="/admin"
-            className="flex items-center gap-2 p-3 mb-3 font-semibold border-b border-black hover:text-black-500"
-          >
+          <Link onClick={() => handleNavigation()} href="/admin" className="flex items-center gap-2 p-3 mb-3 font-semibold border-b border-black hover:text-black-500">
             <span>Dashboard</span>
           </Link>
         </li>
@@ -183,7 +196,7 @@ return (
                 {openMenus[item.name] ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
               </div>
             ) : (
-              <Link 
+              <Link onClick={() => handleNavigation()} 
                 href={item.path} 
                 className={`flex items-center gap-2 p-2 w-full rounded-md hover:bg-gray-200 transition ${
                   pathname.startsWith(item.path) ? "bg-gray-400 text-white" : ""
@@ -198,10 +211,10 @@ return (
               <ul className="ml-6 mt-1 space-y-1">
                 {item.subMenu.map((subItem) => (
                   <li key={subItem.path} className="mb-2">
-                    <Link 
+                    <Link onClick={() => handleNavigation()} 
                       href={subItem.path} 
                       className={`block p-2 text-md rounded-md hover:bg-gray-200 transition ${
-                        pathname.startsWith(subItem.path) ? "bg-gray-400 text-white" : ""
+                        pathname === subItem.path ? "bg-gray-400 text-white" : ""
                       }`}
                     >
                       {subItem.name}
@@ -215,6 +228,10 @@ return (
       </ul>
     </nav>
   </aside>
+  {loading && (
+    <Loader/>
+  )}
+  </>
 );
 };
 

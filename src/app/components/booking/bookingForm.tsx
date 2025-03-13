@@ -6,6 +6,7 @@ import PageTitle from "../admin/pagetitle";
 import { useRouter } from "next/navigation";
 import { message } from "antd";
 import '@ant-design/v5-patch-for-react-19';
+import Loader from "../admin/loader";
 
 export default function BookingForm() {
     const [fileNames, setFileNames] = useState<{ [key: string]: string }>({});
@@ -114,7 +115,7 @@ export default function BookingForm() {
             message.success("Form submitted successfully!");
             setTimeout(() => {
                 window.open(`/booking/payment/${result.booking.id}`, '_blank');
-                router.push('/admin/booking-form');
+                router.push(`/admin/booking-form/${result.booking.id}`);
             }, 1000);
 
         } catch (error) {
@@ -192,6 +193,7 @@ export default function BookingForm() {
                 <div className="w-[28%] bg-gray-100 bg-cover bg-center" style={{ backgroundImage: "url('/franchise_form.jpg')" }}>
                 </div>
             </div>
+            {isLoading && ( <Loader/> )}
         </div>
     );
 }
