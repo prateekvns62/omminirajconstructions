@@ -23,6 +23,7 @@ interface BookingType {
     panCardCopy?: string | null; 
     registryCopy?: string | null; 
     franchise_id?: string | null;
+    status: number;
     createdAt: string | Date;
     updatedAt: string | Date;
     paymentDetails?: PaymentDetailsType | null;  // <-- Allow null

@@ -102,6 +102,7 @@ model booking {
   panCardCopy        String?
   registryCopy       String?
   franchise_id       String?
+  status             Int  //0 - Submitted, 1- In Progress, 2 - Completed, 3- Payment Pending
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @default(now())
   paymentDetails     paymentDetails?

@@ -1,6 +1,6 @@
 "use client";
 import { Table, Input, Select, Button, Tag, Modal, Tooltip, DatePicker, Skeleton, message } from "antd";
-import { SearchOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { SearchOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined, ClockCircleOutlined, SyncOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,7 @@ interface BookingType {
   workThrough: string;
   plotSize: string;
   area: number;
+  status: number;
   createdAt: string | Date;
   updatedAt: string | Date;
   paymentDetails?: PaymentDetailsType | null;
@@ -98,6 +99,21 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
     item.email.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  const getStatusTag = (status: number) => {
+    switch (status) {
+      case 0:
+        return <Tag icon={<ClockCircleOutlined />} color="blue">Submitted</Tag>;
+      case 1:
+        return <Tag icon={<SyncOutlined spin />} color="orange">In Progress</Tag>;
+      case 2:
+        return <Tag icon={<CheckCircleOutlined />} color="green">Completed</Tag>;
+      case 3:
+        return <Tag icon={<ExclamationCircleOutlined />} color="red">Payment Pending</Tag>;
+      default:
+        return <Tag color="default">Unknown</Tag>;
+    }
+  };
+
   const columns: ColumnsType<BookingType> = [
     { title: "Booking ID", dataIndex: "bookingId", width: 150 },
     { title: "Name", dataIndex: "name", width: 250 },
@@ -106,20 +122,7 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
     { title: "Area", dataIndex: "area", width: 100 },
     { title: "Amount", dataIndex: "plotSize", render: (plotSize: string) => `${plotSize} INR`, width: 120 },
     { title: "Created At", dataIndex: "createdAt", render: (date) => format(new Date(date), "dd MMM yyyy, hh:mm a"), width: 180 },
-    {
-      title: "Status",
-      dataIndex: "paymentDetails",
-      key: "status",
-      render: (paymentDetails: PaymentDetailsType | null) => {
-        if (!paymentDetails) return <Tag color="default">Unknown</Tag>;
-        switch (paymentDetails.status) {
-          case "SUCCESS":
-            return <Tag color="green">Success</Tag>;
-          default:
-            return <Tag color="red">Unknown</Tag>;
-        }
-      }
-    },
+    { title: "Status", dataIndex: "status", render: getStatusTag, sorter: (a, b) => a.status - b.status, width: 150 },
     {
       title: "Actions",
       render: (_, record) => ( 
@@ -139,6 +142,12 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
       <div className="p-4">
         <div className="flex gap-4 mb-4">
           <Input placeholder="Search by name or email..." prefix={<SearchOutlined />} onChange={handleSearch} className="w-1/3" />
+          <Select placeholder="Filter by status" onChange={handleStatusFilterChange} allowClear className="w-1/4">
+            <Select.Option value={0}>Submitted</Select.Option>
+            <Select.Option value={1}>In Progress</Select.Option>
+            <Select.Option value={2}>Completed</Select.Option>
+            <Select.Option value={3}>Pending Payment</Select.Option>
+          </Select>
           <RangePicker onChange={handleDateRangeChange} className="w-1/3" />
         </div>
 

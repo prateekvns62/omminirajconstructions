@@ -3,16 +3,17 @@ import FormData from "@/app/components/booking/formData";
 
 const prisma = new PrismaClient();
 
-export default async function ContactDetailPage({ params }: { params: { id: string } }) {
+export default async function BookingDetailPage({ params }: { params: { id: string } }) {
   try {
-    const { id } = params;  // No need to await params
+    const { id } = await params;
 
-    const userId = parseInt(id, 10);
+    const bookingId = parseInt(id, 10);
     
-    if (isNaN(userId)) return <p className="text-red-500 text-center">Invalid Booking ID</p>;
+    
+    if (isNaN(bookingId)) return <p className="text-red-500 text-center">Invalid Booking ID</p>;
 
     const booking = await prisma.booking.findUnique({
-      where: { id: userId },
+      where: { id: bookingId },
       include: {
         paymentDetails: true,
       },

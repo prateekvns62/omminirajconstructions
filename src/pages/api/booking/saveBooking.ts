@@ -71,7 +71,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         
         try {
             const booking = await prisma.booking.create({
-                
                 data: {
                     bookingId: bookingId as string,
                     name: rawFields.name as string,
@@ -87,6 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     plotSize: String(rawFields.plotSize) as string,
                     area: Number(rawFields.area) as number,
                     franchise_id: rawFields?.franchise_id as string,
+                    status: 3,
                 },
             });
         

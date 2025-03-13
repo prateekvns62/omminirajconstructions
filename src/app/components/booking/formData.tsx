@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Descriptions, Tag, Button, Modal, message,Skeleton, Card, Image } from "antd";
 import { format } from "date-fns";
-import { DownloadOutlined, CheckCircleOutlined, MailOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import { DownloadOutlined, CheckCircleOutlined, MailOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import '@ant-design/v5-patch-for-react-19';
 import { usePathname, useRouter } from "next/navigation";
 import PageTitle from "../admin/pagetitle";
@@ -26,6 +26,7 @@ interface BookingType {
   panCardCopy?: string | null; 
   registryCopy?: string | null; 
   franchise_id?: string | null;
+  status: number;
   createdAt: string | Date;
   updatedAt: string | Date;
   paymentDetails?: PaymentDetailsType | null;  // <-- Allow null
@@ -51,6 +52,21 @@ const getStatusTag = (status: string) => {
       return <Tag icon={<ClockCircleOutlined />} color="green" style={tagStyle}>SUCCESS</Tag>;
     default:
       return <Tag color="default" style={tagStyle}>Unknown</Tag>;
+  }
+};
+
+const getBookingStatusTag = (status: number) => {
+  switch (status) {
+    case 0:
+      return <Tag icon={<ClockCircleOutlined />} color="blue">Submitted</Tag>;
+    case 1:
+      return <Tag icon={<SyncOutlined spin />} color="orange">In Progress</Tag>;
+    case 2:
+      return <Tag icon={<CheckCircleOutlined />} color="green">Completed</Tag>;
+    case 3:
+      return <Tag icon={<ExclamationCircleOutlined />} color="red">Payment Pending</Tag>;
+    default:
+      return <Tag color="default">Unknown</Tag>;
   }
 };
 
@@ -193,8 +209,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
       <div className="p-6 bg-white shadow-md rounded-lg space-y-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold flex items-center space-x-2">
-            {getStatusTag(paymentData!.status)}
-            <span>Submitted By: {bookingData.name}</span>
+          <span>Booking Status: </span>{getBookingStatusTag(bookingData!.status)}
           </h2>
           <div className="space-x-3">
             {/* Show the button if paymentData is missing or payment is not successful */}
@@ -220,22 +235,29 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
                 <Descriptions.Item label="Franchise Id"><strong>{bookingData.franchise_id}</strong></Descriptions.Item>
             )}
             <Descriptions.Item label="Area"><strong>{bookingData.area}  sq.ft.</strong></Descriptions.Item>
-            <Descriptions.Item label="Amount"><strong>{bookingData.plotSize} INR</strong></Descriptions.Item>
+            <Descriptions.Item label="Booking Amount"><strong>{bookingData.plotSize} INR</strong></Descriptions.Item>
           </Descriptions>
         </div>
 
         <div className="mt-4">
           <Descriptions bordered column={1} size="middle" title="Booking Payment Details">
-            {paymentData && (
+            {paymentData ? (
               <>
                 <Descriptions.Item label="Payment Method">{paymentData.paymentMethod}</Descriptions.Item>
                 <Descriptions.Item label="Transaction ID">{paymentData.transactionId}</Descriptions.Item>
-                <Descriptions.Item label="Amount">{paymentData.amount} INR</Descriptions.Item>
-                <Descriptions.Item label="Status">{getStatusTag(paymentData.status)}</Descriptions.Item>
+                <Descriptions.Item label="Amount Paid">{paymentData.amount} INR</Descriptions.Item>
+                <Descriptions.Item label="Payment Status">{getStatusTag(paymentData.status)}</Descriptions.Item>
               </>
+            ) : (
+              <Descriptions.Item label="Payment Status">
+                <span className="text-red-500">
+                  No payment has been received for this booking. Please resend the payment link to complete the transaction.
+                </span>
+              </Descriptions.Item>
             )}
           </Descriptions>
         </div>
+
 
         <div className="mt-4">
           <Descriptions title="Booking Documents" bordered column={2}>

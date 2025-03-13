@@ -25,11 +25,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const { orderCreationId, razorpayPaymentId, razorpaySignature, bookingId, amount } = (await req.body);
       
       const signature = generatedSignature(orderCreationId, razorpayPaymentId);
-      if (signature !== razorpaySignature) {
-       return res.status(400).json(
-        { message: 'payment verification failed', isOk: false }
-       );
-      }
 
       const status = signature === razorpaySignature ? "SUCCESS" : "FAILED";
 
@@ -62,6 +57,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
         });
       }
+
+      if (signature !== razorpaySignature) {
+        await prisma.booking.update({
+          where: { bookingId },
+          data: {
+            status:3,
+            updatedAt: new Date(),
+          },
+        });
+
+        return res.status(400).json(
+         { message: 'payment verification failed', isOk: false }
+        );
+      }
+
+      await prisma.booking.update({
+        where: { bookingId },
+        data: {
+          status:0,
+          updatedAt: new Date(),
+        },
+      });
 
       return res.status(200).json({ message: 'payment verified successfully', isOk: true });
 
