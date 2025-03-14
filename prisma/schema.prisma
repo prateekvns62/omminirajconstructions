@@ -130,6 +130,7 @@ model activeCertificate {
   certificateId           String
   certificateApprovalDate DateTime
   expiredDate             DateTime
+  priority                Int
   status                  Boolean  @default(true)
   showOnHome              Boolean  @default(false)
 }
