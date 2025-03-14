@@ -116,11 +116,11 @@ export default function CertificateForm() {
             message.success("Form submitted successfully!");
             setTimeout(() => {
                 router.push(`/admin/certificates/${result.certificate.id}`);
-            }, 2000);
+            }, 1000);
 
         } catch (error) {
             console.error("Submission Error:", error);
-            message.success("Something went wrong!");
+            message.error("Something went wrong!");
         } finally {
             setIsLoading(false); // Stop loading
         }

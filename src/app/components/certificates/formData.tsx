@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Descriptions, Tag, Button, Modal, Form, Input, message,Skeleton, Card, Image } from "antd";
 import { format } from "date-fns";
-import { DownloadOutlined, CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { DownloadOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import '@ant-design/v5-patch-for-react-19';
 import { usePathname, useRouter } from "next/navigation";
 import PageTitle from "../admin/pagetitle";
@@ -171,6 +171,10 @@ export default function FranchiseDetails({ certificate }: { certificate: Certifi
     });
   };
 
+  const handleEdit = () => {
+      router.push(`/admin/certificates/update/${certificate.id}`);
+  };
+
   return (
     <div>
       <PageTitle title={`Certificate Detail #${certificate.identifier}`} />
@@ -181,16 +185,22 @@ export default function FranchiseDetails({ certificate }: { certificate: Certifi
           <span>Certificate Id : {certificate.certificateId}</span>
         </h2>
         <div className="space-x-3">
+        <Button
+            type="primary"
+            size="large"
+            className="bg-blue-600 text-white w-[160px] h-[56px] text-xl font-semibold rounded-lg shadow-md transition-all duration-300 hover:bg-blue-700 hover:shadow-lg flex items-center justify-center"
+            icon={<EditOutlined />}
+            onClick={handleEdit}
+        >
+            Edit
+        </Button>
           <Button
               type="primary"
               size="large"
               danger
               className="bg-gray-700 text-white w-[160px] h-[56px] text-xl font-semibold rounded-lg shadow-md transition-all duration-300 hover:bg-gray-800 hover:shadow-lg flex items-center justify-center"
               icon={<DeleteOutlined />}
-              onClick={handleDelete}
-            >
-              Delete
-            </Button>
+              onClick={handleDelete} >Delete</Button>
         </div>
       </div>
         <div>
