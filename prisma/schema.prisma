@@ -102,6 +102,7 @@ model booking {
   panCardCopy        String?
   registryCopy       String?
   franchise_id       String?
+  status             Int  //0 - Submitted, 1- In Progress, 2 - Completed, 3- Payment Pending
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @default(now())
   paymentDetails     paymentDetails?
@@ -117,5 +118,80 @@ model paymentDetails {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  booking       booking @relation(fields: [bookingId], references: [bookingId])
+  booking       booking @relation(fields: [bookingId], references: [bookingId], onDelete: Cascade)
+}
+
+model activeCertificate {
+  id                      Int   @id @default(autoincrement())
+  identifier              String   @unique
+  title                   String
+  pdf                     String
+  img                     String
+  certificateId           String
+  certificateApprovalDate DateTime
+  expiredDate             DateTime
+  priority                Int
+  status                  Boolean  @default(true)
+  showOnHome              Boolean  @default(false)
+}
+
+model ourServices {
+  id            Int   @id @default(autoincrement())
+  serviceTitle  String
+  description   String
+  image         String
+  status        Boolean  @default(true)
+  showOnHome    Boolean  @default(false)
+}
+
+model customerTestimonials {
+  id             Int   @id @default(autoincrement())
+  customerName   String
+  reviewMessage  String
+  showOnHome     Boolean  @default(true)
+}
+
+model branches {
+  id         Int   @id @default(autoincrement())
+  branchCode String @unique
+  branchName String
+  location   String
+  priority   Int
+  mapIframe  String
+}
+
+model Distributor {
+  id       Int   @id @default(autoincrement())
+  name     String
+  email    String
+  contact  String
+  village  String
+  district String
+  tahsil   String
+  position String
+  branchCode String
+  mapIframe  String
+}
+
+model imageGallery {
+  id    Int   @id @default(autoincrement())
+  image String
+  title String?
+}
+
+model ourClients {
+  id       Int   @id @default(autoincrement())
+  type     Int   // 0 - "Image" & 1- "List"
+  srNo     Int?
+  name     String?
+  location String?
+  image    String?
+}
+
+model ongoingProjects {
+  id          Int   @id @default(autoincrement())
+  type        Int  // "portrait" or "landscape"
+  linkType    Int  //"url" or "iframe"
+  youtubeLink String?
+  iframeLink  String?
 }

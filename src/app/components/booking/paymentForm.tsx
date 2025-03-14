@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Script from 'next/script';
 import { Button } from '@/components/ui/button';
 import Label from '@/components/ui/Label';
 import { useRouter } from "next/navigation";
-import { message } from 'antd';
+import { message,Skeleton, Card } from "antd";
+import Loader from '../admin/loader';
 
 interface BookingType {
     id: number;
@@ -23,6 +24,7 @@ interface BookingType {
     panCardCopy?: string | null; 
     registryCopy?: string | null; 
     franchise_id?: string | null;
+    status: number;
     createdAt: string | Date;
     updatedAt: string | Date;
     paymentDetails?: PaymentDetailsType | null;  // <-- Allow null
@@ -44,6 +46,13 @@ export default function BookingPayment({ booking }: { booking: BookingType }) {
     const [currency] = useState('INR');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (booking) {
+          setIsLoading(false);
+        }
+      }, [booking]);
 
     const createOrderId = async () => {
         try {
@@ -117,7 +126,22 @@ export default function BookingPayment({ booking }: { booking: BookingType }) {
         }
     };
 
+    if (isLoading) {
+        return (
+          <div className="p-6 bg-white shadow-md rounded-lg space-y-6">
+            <Skeleton active />
+            <Card className="p-4">
+              <Skeleton active paragraph={{ rows: 4 }} />
+            </Card>
+            <Card className="p-4">
+              <Skeleton active paragraph={{ rows: 3 }} />
+            </Card>
+          </div>
+        );
+      }
+
     return (
+        <>
         <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
             <Script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js"/>
             <div className="bg-white shadow-lg rounded-2xl p-6 sm:p-8 sm:w-200">
@@ -163,5 +187,7 @@ export default function BookingPayment({ booking }: { booking: BookingType }) {
                 </form>
             </div>
         </div>
+        {loading && ( <Loader/> )}
+        </>
     );
 }

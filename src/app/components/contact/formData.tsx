@@ -4,6 +4,7 @@ import { Descriptions, Input, Button, message as antdMessage } from "antd";
 import { format } from "date-fns";
 import '@ant-design/v5-patch-for-react-19';
 import PageTitle from "../admin/pagetitle";
+import Loader from "../admin/loader";
 
 interface UserType {
   id: number;
@@ -141,6 +142,7 @@ export default function FormData({ user, adminReply, contactUsReplyOnce }: { use
           </div>
         )}
       </div>
+      {loading && (<Loader/>)}
     </div>
   );
 }

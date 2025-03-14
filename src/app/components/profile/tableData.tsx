@@ -8,6 +8,7 @@ import { format, isWithinInterval, parseISO } from "date-fns";
 import '@ant-design/v5-patch-for-react-19';
 import type { TablePaginationConfig } from "antd/es/table";
 import PageTitle from "../admin/pagetitle";
+import Loader from "../admin/loader";
 
 const { RangePicker } = DatePicker;
 
@@ -28,6 +29,7 @@ export default function TableData({ users }: { users: ProfileType[] }) {
   const [tableData, setTableData] = useState<ProfileType[]>([]);
   const [dateRange, setDateRange] = useState<[string | null, string | null]>([null, null]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
     pageSize: 20,
@@ -73,6 +75,7 @@ export default function TableData({ users }: { users: ProfileType[] }) {
       okText: "Yes, Delete",
       cancelText: "Cancel",
       onOk: async () => {
+        setIsLoading(true);
         try {
           const response = await fetch(`/api/profile/${id}`, { method: "DELETE" });
           if (response.ok) {
@@ -83,12 +86,17 @@ export default function TableData({ users }: { users: ProfileType[] }) {
           }
         } catch (error) {
           message.error("An error occurred while deleting the record");
+        } finally {
+          setIsLoading(false);
         }
       },
     });
   };
 
-  const handleEdit = (id: number) => router.push(`/admin/profile/${id}`);
+  const handleEdit = (id: number) => {
+    setIsLoading(true);
+    router.push(`/admin/profile/${id}`);
+  }
 
   const handleSelectChange = (keys: React.Key[]) => setSelectedRowKeys(keys.map((key) => key as number));
 
@@ -178,6 +186,7 @@ export default function TableData({ users }: { users: ProfileType[] }) {
         />
       )}
     </div>
+    {isLoading && (<Loader/>)}
     </div>
   );
 }

@@ -1,14 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import { User } from "lucide-react";
-import { message } from "antd";
+import { message, Skeleton, Card } from "antd";
 import '@ant-design/v5-patch-for-react-19';
 import { useRouter } from "next/navigation";
 import PageTitle from "@/app/components/admin/pagetitle";
+import Loader from "@/app/components/admin/loader";
 
 const ProfilePage = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [passwords, setPasswords] = useState({ newPassword: "", confirmPassword: "" });
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
@@ -66,6 +68,7 @@ const ProfilePage = () => {
     if (!validatePassword(passwords.newPassword) || passwords.newPassword !== passwords.confirmPassword) {
       return;
     }
+    setIsLoading(true);
     
     try {
       const res = await fetch("/api/profile/updateprofile", {
@@ -86,10 +89,24 @@ const ProfilePage = () => {
       }
     } catch (error) {
       message.error("Something went wrong! Please try after some time.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <div className="p-6 bg-white shadow-md rounded-lg space-y-6">
+        <Skeleton active />
+        <Card className="p-4">
+          <Skeleton active paragraph={{ rows: 4 }} />
+        </Card>
+        <Card className="p-4">
+          <Skeleton active paragraph={{ rows: 3 }} />
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -139,6 +156,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+      {isLoading && (<Loader/>)}
     </div>
   );
 };

@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const form = formidable({
         uploadDir,
         keepExtensions: true,
-        maxFileSize: 5 * 1024 * 1024, // 5MB limit
+        maxFileSize: 50 * 1024 * 1024, // 50MB limit
         multiples: false, // Ensure single file handling
     });
 
@@ -39,7 +39,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             rawFields[key] = fields[key]?.[0] ?? "";
         });
         
-        // Ensure files exist before processing
         const filePaths: { [key: string]: string | null } = {};
         for (const key in files) {
             const fileData = files[key]; // Can be File[] or File
@@ -72,13 +71,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         
         try {
             const booking = await prisma.booking.create({
-                
                 data: {
                     bookingId: bookingId as string,
                     name: rawFields.name as string,
                     email: rawFields.email as string,
                     aadhaarCardNumber: Number(rawFields.aadhaarCardNumber) as number,
-                    photo: rawFields.accountNumber as string,
+                    photo: filePaths.photo as string,
                     workThrough: rawFields.workThrough as string,
                     registryCopy: filePaths.registryCopy as string,
                     panCardCopy: filePaths.panCardCopy as string,
@@ -88,6 +86,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     plotSize: String(rawFields.plotSize) as string,
                     area: Number(rawFields.area) as number,
                     franchise_id: rawFields?.franchise_id as string,
+                    status: 3,
                 },
             });
         
