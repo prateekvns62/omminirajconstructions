@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             currency: string;
         };
 
-        var options = {
+        const options = {
             amount: amount,
             currency: currency,
             receipt: 'rcp1',

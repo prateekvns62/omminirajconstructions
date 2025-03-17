@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { name, email, username, password, confirmPassword, status } = req.body;
+    const { name, email, username, password, status } = req.body;
 
     // Check if user already exists
     const existingUser = await checkExistingUser(email, username);

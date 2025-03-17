@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { id, email, name, replyMessage } = req.body; // ✅ Use req.body instead of req.json()
+    const { id, replyMessage } = req.body; // ✅ Use req.body instead of req.json()
 
     if (!id || !replyMessage) {
       return res.status(400).json({ message: "ID and Reply Message are required" });
