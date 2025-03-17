@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { 
-    Home, 
     Users, 
     Settings, 
     ChevronDown, 
@@ -18,10 +17,122 @@ import {
     Award, 
     MapPin, 
     File, 
-    Image, 
-    Layers 
+    ImagePlus
 } from "lucide-react";
 import Loader from "./loader";
+
+const menuItems = [
+  { name: "Contact Us", path: "/admin/contact", icon: <Phone size={18} color="blue" /> },
+  { name: "Booking Form",
+    path: "/admin/booking",
+    icon: <FileText size={18} color="green" />,
+    subMenu: [
+      { name: "All Booking", path: "/admin/booking-form" },
+      { name: "Add Booking", path: "/admin/booking-form/add" },
+    ],
+  },
+  {
+      name: "Franchise Booking",
+      path: "/admin/franchise",
+      icon: <Calendar size={18} color="purple" />,
+      subMenu: [
+          { name: "All Franchise", path: "/admin/franchise/all" },
+          { name: "Add Franchise", path: "/admin/franchise/add" },
+      ],
+  },
+  { 
+      name: "Branches", 
+      path: "/admin/branches", 
+      icon: <MapPin size={18} color="red" />,
+      subMenu: [
+          { name: "All Branches", path: "/admin/branches/all" },
+          { name: "Add Branch", path: "/admin/branches/add" },
+      ],
+  },
+  { 
+      name: "Our Services", 
+      path: "/admin/services", 
+      icon: <Briefcase size={18} color="orange" />,
+      subMenu: [
+          { name: "All Services", path: "/admin/services/all" },
+          { name: "Add Service", path: "/admin/services/add" },
+      ],
+  },
+  { 
+      name: "Our Clients", 
+      path: "/admin/clients", 
+      icon: <Users size={18} color="cyan" />,
+      subMenu: [
+          { name: "All Clients List", path: "/admin/clients/all" },
+          { name: "All Clients Images", path: "/admin/clients/allimages" },
+          { name: "Add Client", path: "/admin/clients/add" },
+      ],
+  },
+  { 
+      name: "Gallery", 
+      path: "/admin/gallery", 
+      icon: <ImagePlus size={18} color="pink" />,
+      subMenu: [
+          { name: "All Images", path: "/admin/gallery/all" },
+          { name: "Add Image", path: "/admin/gallery/add" },
+      ],
+  },
+  { 
+      name: "Ongoing Projects", 
+      path: "/admin/ongoing-projects", 
+      icon: <Clipboard size={18} color="brown" />,
+      subMenu: [
+          { name: "All Projects", path: "/admin/ongoing-projects/all" },
+          { name: "Add Project", path: "/admin/ongoing-projects/add" },
+      ],
+  },
+  { 
+      name: "Pages Content", 
+      path: "/admin/pages", 
+      icon: <File size={18} color="teal" />,
+      subMenu: [
+          { name: "All Pages", path: "/admin/pages/all" },
+          { name: "Add Page", path: "/admin/pages/add" },
+      ],
+  },
+  {
+      name: "Testimonials", 
+      path: "/admin/testimonials", 
+      icon: <MessageCircle size={18} color="violet" />,
+      subMenu: [
+          { name: "All Testimonials", path: "/admin/testimonials/all" },
+          { name: "Add Testimonial", path: "/admin/testimonials/add" },
+      ],
+  },
+  { 
+      name: "Active Certificates", 
+      path: "/admin/certificates", 
+      icon: <Award size={18} color="gold" />,
+      subMenu: [
+          { name: "All Certificates", path: "/admin/certificates/all" },
+          { name: "Add Certificate", path: "/admin/certificates/add" },
+      ],
+  },
+  {
+      name: "Admin Users", 
+      path: "/admin/users", 
+      icon: <Users size={18} color="navy" />,
+      subMenu: [
+          { name: "All Users", path: "/admin/profile/all" },
+          { name: "Add User", path: "/admin/profile/add" },
+      ],
+  },
+  { 
+      name: "Settings", 
+      path: "/admin/settings", 
+      icon: <Settings size={18} color="black" />,
+      subMenu: [
+          { name: "General", path: "/admin/settings/general" },
+          { name: "SMTP", path: "/admin/settings/smtp" },
+          { name: "Notifications", path: "/admin/settings/notifications" },
+      ],
+  },
+];
 
 const Sidebar = () => {
   const pathname = usePathname() || "";
@@ -35,7 +146,6 @@ const Sidebar = () => {
       }
     });
   }, [pathname]);
-
 
   const toggleMenu = (menuName: string) => {
     setOpenMenus((prev) => {
@@ -55,118 +165,6 @@ const Sidebar = () => {
   useEffect(() => {
     setLoading(false); // Stop loading when route changes
   }, [pathname]);
-
-const menuItems = [
-    { name: "Contact Us", path: "/admin/contact", icon: <Phone size={18} color="blue" /> },
-    { name: "Booking Form",
-      path: "/admin/booking",
-      icon: <FileText size={18} color="green" />,
-      subMenu: [
-        { name: "All Booking", path: "/admin/booking-form" },
-        { name: "Add Booking", path: "/admin/booking-form/add" },
-      ],
-    },
-    {
-        name: "Franchise Booking",
-        path: "/admin/franchise",
-        icon: <Calendar size={18} color="purple" />,
-        subMenu: [
-            { name: "All Franchise", path: "/admin/franchise/all" },
-            { name: "Add Franchise", path: "/admin/franchise/add" },
-        ],
-    },
-    { 
-        name: "Branches", 
-        path: "/admin/branches", 
-        icon: <MapPin size={18} color="red" />,
-        subMenu: [
-            { name: "All Branches", path: "/admin/branches/all" },
-            { name: "Add Branch", path: "/admin/branches/add" },
-        ],
-    },
-    { 
-        name: "Our Services", 
-        path: "/admin/services", 
-        icon: <Briefcase size={18} color="orange" />,
-        subMenu: [
-            { name: "All Services", path: "/admin/services/all" },
-            { name: "Add Service", path: "/admin/services/add" },
-        ],
-    },
-    { 
-        name: "Our Clients", 
-        path: "/admin/clients", 
-        icon: <Users size={18} color="cyan" />,
-        subMenu: [
-            { name: "All Clients", path: "/admin/clients/all" },
-            { name: "Add Client", path: "/admin/clients/add" },
-        ],
-    },
-    { 
-        name: "Gallery", 
-        path: "/admin/gallery", 
-        icon: <Image size={18} color="pink" />,
-        subMenu: [
-            { name: "All Images", path: "/admin/gallery/all" },
-            { name: "Add Image", path: "/admin/gallery/add" },
-        ],
-    },
-    { 
-        name: "Ongoing Projects", 
-        path: "/admin/ongoing-projects", 
-        icon: <Clipboard size={18} color="brown" />,
-        subMenu: [
-            { name: "All Projects", path: "/admin/ongoing-projects/all" },
-            { name: "Add Project", path: "/admin/ongoing-projects/add" },
-        ],
-    },
-    { 
-        name: "Pages Content", 
-        path: "/admin/pages", 
-        icon: <File size={18} color="teal" />,
-        subMenu: [
-            { name: "All Pages", path: "/admin/pages/all" },
-            { name: "Add Page", path: "/admin/pages/add" },
-        ],
-    },
-    {
-        name: "Testimonials", 
-        path: "/admin/testimonials", 
-        icon: <MessageCircle size={18} color="violet" />,
-        subMenu: [
-            { name: "All Testimonials", path: "/admin/testimonials/all" },
-            { name: "Add Testimonial", path: "/admin/testimonials/add" },
-        ],
-    },
-    { 
-        name: "Active Certificates", 
-        path: "/admin/certificates", 
-        icon: <Award size={18} color="gold" />,
-        subMenu: [
-            { name: "All Certificates", path: "/admin/certificates/all" },
-            { name: "Add Certificate", path: "/admin/certificates/add" },
-        ],
-    },
-    {
-        name: "Admin Users", 
-        path: "/admin/users", 
-        icon: <Users size={18} color="navy" />,
-        subMenu: [
-            { name: "All Users", path: "/admin/profile/all" },
-            { name: "Add User", path: "/admin/profile/add" },
-        ],
-    },
-    { 
-        name: "Settings", 
-        path: "/admin/settings", 
-        icon: <Settings size={18} color="black" />,
-        subMenu: [
-            { name: "General", path: "/admin/settings/general" },
-            { name: "SMTP", path: "/admin/settings/smtp" },
-            { name: "Notifications", path: "/admin/settings/notifications" },
-        ],
-    },
-];
 
 
 return (

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageTitle from "../admin/pagetitle";
@@ -12,7 +12,7 @@ interface ServiceType {
     id: number;
     serviceTitle: string;
     description: string;
-    image: File | null;
+    image: string | File | null;
     status: boolean;
     showOnHome: boolean;
   }
@@ -26,7 +26,7 @@ export default function UpdateServicesForm({ service }: { service: ServiceType }
     const router = useRouter();
 
     const handleBack = () => {
-        let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
+        const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
     
         if (historyStack.length > 1) {
           historyStack.pop(); // Remove current page
@@ -108,7 +108,7 @@ export default function UpdateServicesForm({ service }: { service: ServiceType }
     
             if (!response.ok) throw new Error("Form submission failed");
     
-            const result = await response.json();
+            //const result = await response.json();
             message.success("Form submitted successfully!");
             setTimeout(() => {
                 handleBack();

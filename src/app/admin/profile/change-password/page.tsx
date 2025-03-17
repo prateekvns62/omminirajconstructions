@@ -7,8 +7,18 @@ import { useRouter } from "next/navigation";
 import PageTitle from "@/app/components/admin/pagetitle";
 import Loader from "@/app/components/admin/loader";
 
+type UserType = {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  status: number;
+  created_at: string | Date;
+  last_login: string | Date;
+};
+
 const ProfilePage = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [passwords, setPasswords] = useState({ newPassword: "", confirmPassword: "" });
@@ -20,13 +30,14 @@ const ProfilePage = () => {
     const fetchProfile = async () => {
       try {
         const res = await fetch("/api/profile");
-        const data = await res.json();
+        const data: UserType = await res.json();
         if (res.ok) {
           setUser(data);
         } else {
           message.error("Error fetching profile data");
         }
       } catch (error) {
+        console.log(error);
         message.error("Error fetching profile data");
       } finally {
         setLoading(false);
@@ -41,7 +52,7 @@ const ProfilePage = () => {
     return strongPasswordRegex.test(password);
   };
 
-  const handlePasswordChange = (e: any) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPasswords({ ...passwords, [name]: value });
 
@@ -74,9 +85,9 @@ const ProfilePage = () => {
       const res = await fetch("/api/profile/updateprofile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status:user.status, userId: user.id, newPassword: passwords.newPassword }),
+        body: JSON.stringify({ status:user?.status, userId: user?.id, newPassword: passwords.newPassword }),
       });
-      const data = await res.json();
+      const data: UserType = await res.json();
       if (res.ok) {
         setUser(data);
         setPasswords({ newPassword: "", confirmPassword: "" });
@@ -88,6 +99,7 @@ const ProfilePage = () => {
         message.error("Something went wrong! Please try after some time.");
       }
     } catch (error) {
+      console.log(error);
       message.error("Something went wrong! Please try after some time.");
     } finally {
       setIsLoading(false);
@@ -110,7 +122,7 @@ const ProfilePage = () => {
 
   return (
     <div>
-      <PageTitle title={`${user.username} - Change Password`} />
+      <PageTitle title={`${user?.username} - Change Password`} />
       <div className="min-h-screen flex justify-center items-center bg-gray-100">
         <div className="w-full max-w-3xl p-8 bg-white shadow-lg rounded-lg">
           <div className="flex flex-col items-center mb-6">

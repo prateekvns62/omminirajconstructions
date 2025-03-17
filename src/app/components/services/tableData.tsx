@@ -1,16 +1,13 @@
 "use client";
-import { Table, Input, Select, Button, Tag, Modal, Tooltip, DatePicker, Skeleton, message } from "antd";
-import { SearchOutlined, EditOutlined, DeleteOutlined, CheckCircleOutlined, ExclamationCircleOutlined, CloseCircleOutlined, EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+import { Table, Input, Select, Button, Tag, Modal, Tooltip, Skeleton, message } from "antd";
+import { SearchOutlined, EditOutlined, DeleteOutlined, CheckCircleOutlined, ExclamationCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { format, isWithinInterval, parseISO } from "date-fns";
 import '@ant-design/v5-patch-for-react-19';
 import type { TablePaginationConfig } from "antd/es/table";
 import PageTitle from "../admin/pagetitle";
 import Loader from "../admin/loader";
-
-const { RangePicker } = DatePicker;
 
 interface ServiceType {
   id: number;
@@ -23,7 +20,6 @@ interface ServiceType {
 
 export default function TableData({ services }: { services: ServiceType[] }) {
   const [searchText, setSearchText] = useState<string>("");
-  const [filteredStatus, setFilteredStatus] = useState<number | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [tableData, setTableData] = useState<ServiceType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -32,9 +28,6 @@ export default function TableData({ services }: { services: ServiceType[] }) {
     current: 1,
     pageSize: 20,
   });
-
-  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
-
   
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination({ current: pagination.current!, pageSize: pagination.pageSize! });
@@ -69,6 +62,7 @@ export default function TableData({ services }: { services: ServiceType[] }) {
             message.error("Failed to delete record");
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while deleting the record");
         } finally {
           setIsLoading(false);

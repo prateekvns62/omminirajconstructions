@@ -1,15 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Descriptions, Tag, Button, Modal, Form, Input, message,Skeleton, Card, Image } from "antd";
-import { format } from "date-fns";
+import { Descriptions, Tag, Button, Modal, message,Skeleton, Card, Image } from "antd";
 import { DownloadOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import '@ant-design/v5-patch-for-react-19';
 import { usePathname, useRouter } from "next/navigation";
 import PageTitle from "../admin/pagetitle";
 import Loader from "../admin/loader";
 
-const isImage = (url:any) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
-const isPDF = (url:any) => /\.pdf$/i.test(url);
+const isImage = (url:string) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
 
 interface ServiceType {
   id: number;
@@ -25,11 +23,10 @@ export default function FranchiseDetails({ service }: { service: ServiceType }) 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname() || "/admin";
-  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 
-  const handlePreview = (imageUrl:any) => {
+  const handlePreview = (imageUrl:string) => {
     setPreviewImage(imageUrl);
     setPreviewVisible(true);
   };
@@ -53,27 +50,10 @@ export default function FranchiseDetails({ service }: { service: ServiceType }) 
     }
   };
 
-  const renderDocument = (label:any, fileUrl:any) => {
+  const renderDocument = (fileUrl:string) => {
     if (!fileUrl) return "N/A";
 
-    if (isPDF(fileUrl)) {
-      return (
-        <>
-          <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-            {label}
-          </a>
-          <Button
-            type="link"
-            icon={<DownloadOutlined />}
-            href={fileUrl}
-            download
-            style={{ marginLeft: 8 }}
-          >
-            Download
-          </Button>
-        </>
-      );
-    } else if (isImage(fileUrl)) {
+    if (isImage(fileUrl)) {
       return (
         <>
           <Image
@@ -82,6 +62,7 @@ export default function FranchiseDetails({ service }: { service: ServiceType }) 
             preview={{ visible: false }} // ✅ Uses built-in preview only
             onClick={() => handlePreview(fileUrl)}
             style={{ cursor: "pointer", marginRight: 8 }}
+            alt="Image"
           />
           <Button
             type="link"
@@ -99,20 +80,18 @@ export default function FranchiseDetails({ service }: { service: ServiceType }) 
   };
 
   useEffect(() => {
-    let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
+    const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
 
     if (historyStack.length === 0 || historyStack[historyStack.length - 1] !== pathname) {
       historyStack.push(pathname);
       sessionStorage.setItem("historyStack", JSON.stringify(historyStack));
     }
-
-    setPreviousUrl(historyStack.length > 1 ? historyStack[historyStack.length - 2] : null);
   }, [pathname]);
 
   
 
   const handleBack = () => {
-    let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
+    const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
 
     if (historyStack.length > 1) {
       historyStack.pop(); // Remove current page
@@ -158,6 +137,7 @@ export default function FranchiseDetails({ service }: { service: ServiceType }) 
             handleBack();
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while deleting the record");
         } finally {
           setLoading(false);
@@ -203,7 +183,7 @@ export default function FranchiseDetails({ service }: { service: ServiceType }) 
           <Descriptions.Item label="Show on Home Page"> {getShowOnHomePageTag()}</Descriptions.Item>
           <Descriptions.Item label="Description" >{service.description ? service.description : "N/A"}</Descriptions.Item>
           <Descriptions.Item label="Service Image" >
-            {renderDocument("Service Image", service.image)}
+            {renderDocument(service.image)}
           </Descriptions.Item>
         </Descriptions>
         {previewVisible && (
@@ -213,7 +193,7 @@ export default function FranchiseDetails({ service }: { service: ServiceType }) 
                 onVisibleChange: (visible) => !visible && setPreviewVisible(false),
               }}
             >
-              <Image src={previewImage} width={0} height={0} />
+              <Image src={previewImage} width={0} height={0} alt="Image" />
             </Image.PreviewGroup>
           )}
       </div>

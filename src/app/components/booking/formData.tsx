@@ -8,8 +8,8 @@ import { usePathname, useRouter } from "next/navigation";
 import PageTitle from "../admin/pagetitle";
 import Loader from "../admin/loader";
 
-const isImage = (url:any) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
-const isPDF = (url:any) => /\.pdf$/i.test(url);
+const isImage = (url:string) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+const isPDF = (url:string) => /\.pdf$/i.test(url);
 
 interface BookingType {
   id: number;
@@ -81,16 +81,15 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname() || "/admin";
-  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 
-  const handlePreview = (imageUrl:any) => {
+  const handlePreview = (imageUrl:string) => {
     setPreviewImage(imageUrl);
     setPreviewVisible(true);
   };
 
-  const renderDocument = (label:any, fileUrl:any) => {
+  const renderDocument = (label:string, fileUrl:string) => {
     if (!fileUrl) return "N/A";
 
     if (isPDF(fileUrl)) {
@@ -119,6 +118,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
             preview={{ visible: false }} // ✅ Uses built-in preview only
             onClick={() => handlePreview(fileUrl)}
             style={{ cursor: "pointer", marginRight: 8 }}
+            alt="Image"
           />
           <Button
             type="link"
@@ -136,14 +136,12 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
   };
 
   useEffect(() => {
-    let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
+    const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
 
     if (historyStack.length === 0 || historyStack[historyStack.length - 1] !== pathname) {
       historyStack.push(pathname);
       sessionStorage.setItem("historyStack", JSON.stringify(historyStack));
     }
-
-    setPreviousUrl(historyStack.length > 1 ? historyStack[historyStack.length - 2] : null);
   }, [pathname]);
 
 
@@ -168,6 +166,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
             message.error(result.message || "Failed to send email.");
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while sending the email.");
         } finally {
           setLoading(false);
@@ -176,7 +175,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
     });
   };
 
-  const updateStatus = async (status: any) => {
+  const updateStatus = async (status: number) => {
     if (!bookingData?.id) {
         message.error("Booking ID is missing.");
         return;
@@ -202,6 +201,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
                     message.error(result.message || "Failed to update status.");
                 }
             } catch (error) {
+                console.log(error);
                 message.error("An error occurred while updating the status.");
             } finally {
               setLoading(false);
@@ -221,6 +221,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
         setBookingData(updatedData.record);
         setPaymentData(updatedData.record.paymentDetails ?? null);
       } catch (error) {
+        console.log(error);
         console.error("Error fetching updated booking details:", error);
       }
     };
@@ -243,6 +244,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
               message.error("Failed to delete record");
             }
           } catch (error) {
+            console.log(error);
             message.error("An error occurred while deleting the record");
           } finally {
             setLoading(false);
@@ -250,20 +252,6 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
         },
       });
     };
-    
-
-  const handleBack = () => {
-    let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
-
-    if (historyStack.length > 1) {
-      historyStack.pop(); // Remove current page
-      const prevPage = historyStack[historyStack.length - 1]; // Get new previous page
-      sessionStorage.setItem("historyStack", JSON.stringify(historyStack));
-      router.push(prevPage);
-    } else {
-      router.push("/admin"); // Fallback to dashboard if no history exists
-    }
-  };
 
 
   useEffect(() => {
@@ -390,19 +378,19 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
         <div className="mt-4">
           <Descriptions title="Booking Documents" bordered column={2}>
             <Descriptions.Item label="Photo" span={2}>
-              {renderDocument("Photo", bookingData.photo)}
+              {renderDocument("Photo", bookingData.photo as string)}
             </Descriptions.Item>
             <Descriptions.Item label="Aadhar Front Copy" span={2}>
-              {renderDocument("Aadhar Front Copy", bookingData.aadharFrontCopy)}
+              {renderDocument("Aadhar Front Copy", bookingData.aadharFrontCopy as string)}
             </Descriptions.Item>
             <Descriptions.Item label="Aadhar Back Copy" span={2}>
-              {renderDocument("Aadhar Back Copy", bookingData.aadharBackCopy)}
+              {renderDocument("Aadhar Back Copy", bookingData.aadharBackCopy as string)}
             </Descriptions.Item>
             <Descriptions.Item label="PAN Card Copy" span={2}>
-              {renderDocument("PAN Card Copy", bookingData.panCardCopy)}
+              {renderDocument("PAN Card Copy", bookingData.panCardCopy as string)}
             </Descriptions.Item>
             <Descriptions.Item label="Registry Copy" span={2}>
-              {renderDocument("Registry Copy", bookingData.registryCopy)}
+              {renderDocument("Registry Copy", bookingData.registryCopy as string)}
             </Descriptions.Item>
           </Descriptions>
           {previewVisible && (
@@ -412,7 +400,7 @@ export default function FranchiseDetails({ booking }: { booking: BookingType }) 
                 onVisibleChange: (visible) => !visible && setPreviewVisible(false),
               }}
             >
-              <Image src={previewImage} width={0} height={0} />
+              <Image src={previewImage} width={0} height={0} alt="Document Image" />
             </Image.PreviewGroup>
           )}
         </div>

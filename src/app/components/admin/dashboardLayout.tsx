@@ -1,27 +1,11 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { ReactNode } from "react";
 import Sidebar from "./sidebar";
 import HeaderLayout from "./header";
 import FooterLayout from "./footer";
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {
-  const pathname = usePathname() || "/dashboard"; // Ensure a default value
-  const router = useRouter();
-
-  const handleBack = () => {
-    const historyStack = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
-
-    if (historyStack.length > 1) {
-      historyStack.pop(); // Remove current page
-      const prevPage = historyStack[historyStack.length - 1]; // Get new previous page
-      sessionStorage.setItem("historyStack", JSON.stringify(historyStack));
-      router.push(prevPage);
-    } else {
-      router.back();
-    }
-  };
 
   return (
     <div className="flex flex-col h-screen">

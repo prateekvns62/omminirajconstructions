@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Button } from '@/components/ui/button';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas-pro';
-import { Skeleton} from "antd";
 import '@ant-design/v5-patch-for-react-19';
 import Loader from '../admin/loader';
 

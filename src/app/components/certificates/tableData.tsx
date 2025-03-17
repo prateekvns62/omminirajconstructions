@@ -1,16 +1,14 @@
 "use client";
-import { Table, Input, Select, Button, Tag, Modal, Tooltip, DatePicker, Skeleton, message } from "antd";
-import { SearchOutlined, EditOutlined, DeleteOutlined, CheckCircleOutlined, ExclamationCircleOutlined, CloseCircleOutlined, EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
+import { Table, Input, Select, Button, Tag, Modal, Tooltip, Skeleton, message } from "antd";
+import { SearchOutlined, EditOutlined, DeleteOutlined, CheckCircleOutlined, ExclamationCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { format, isWithinInterval, parseISO } from "date-fns";
+import { format } from "date-fns";
 import '@ant-design/v5-patch-for-react-19';
 import type { TablePaginationConfig } from "antd/es/table";
 import PageTitle from "../admin/pagetitle";
 import Loader from "../admin/loader";
-
-const { RangePicker } = DatePicker;
 
 interface CertificateType {
   id: number;
@@ -28,7 +26,6 @@ interface CertificateType {
 
 export default function TableData({ certificates }: { certificates: CertificateType[] }) {
   const [searchText, setSearchText] = useState<string>("");
-  const [filteredStatus, setFilteredStatus] = useState<number | null>(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   const [tableData, setTableData] = useState<CertificateType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -37,9 +34,6 @@ export default function TableData({ certificates }: { certificates: CertificateT
     current: 1,
     pageSize: 20,
   });
-
-  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
-
   
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination({ current: pagination.current!, pageSize: pagination.pageSize! });
@@ -55,9 +49,6 @@ export default function TableData({ certificates }: { certificates: CertificateT
   }, [certificates]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value);
-
-  const handleStatusFilterChange = (value: number | null) => setFilteredStatus(value ?? null);
-
 
   const handleDelete = async (id: number) => {
     Modal.confirm({
@@ -77,6 +68,7 @@ export default function TableData({ certificates }: { certificates: CertificateT
             message.error("Failed to delete record");
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while deleting the record");
         } finally {
           setIsLoading(false);

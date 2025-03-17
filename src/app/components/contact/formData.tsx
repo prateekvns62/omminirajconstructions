@@ -28,7 +28,7 @@ export default function FormData({ user, adminReply, contactUsReplyOnce }: { use
   const [loading, setLoading] = useState(false);
 
 
-  const handleSendEmail = async (id: number, name: string, email: string, message: string, userMessage: any) => {
+  const handleSendEmail = async (id: number, name: string, email: string, message: string, userMessage: string) => {
     const contactUsReply = {id, name, email, message, userMessage};
 
     try {
@@ -83,6 +83,7 @@ export default function FormData({ user, adminReply, contactUsReplyOnce }: { use
         antdMessage.error(result.message || "Failed to send the message.");
       }
     } catch (error) {
+      console.log(error);
       antdMessage.error("Something went wrong. Please try again.");
     } finally {
       setLoading(false);

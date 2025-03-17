@@ -12,6 +12,7 @@ export default async function Franchise() {
     });
     return <TableData records={franchises} />;
   } catch (error) {
+    console.log(error);
     return <p>No record found.</p>;
   } finally {
     await prisma.$disconnect(); // Ensure Prisma disconnects after query execution

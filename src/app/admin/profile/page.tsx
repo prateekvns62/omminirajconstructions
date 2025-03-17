@@ -6,14 +6,27 @@ import { message, Skeleton, Card } from "antd";
 import PageTitle from "@/app/components/admin/pagetitle";
 import Loader from "@/app/components/admin/loader";
 
+type UserType = {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  status: number;
+  created_at: string | Date;
+  last_login: string | Date;
+};
+
 const ProfilePage = () => {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [formData, setFormData] = useState<any>(null);
-  const [changePassword, setChangePassword] = useState(false);
-  const [passwords, setPasswords] = useState({ newPassword: "", confirmPassword: "" });
+  const [user, setUser] = useState<UserType | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [editing, setEditing] = useState<boolean>(false);
+  const [formData, setFormData] = useState<UserType | null>(null);
+  const [changePassword, setChangePassword] = useState<boolean>(false);
+  const [passwords, setPasswords] = useState<{ newPassword: string; confirmPassword: string }>({
+    newPassword: "",
+    confirmPassword: "",
+  });
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
 
@@ -21,7 +34,7 @@ const ProfilePage = () => {
     const fetchProfile = async () => {
       try {
         const res = await fetch("/api/profile");
-        const data = await res.json();
+        const data: UserType = await res.json();
         if (res.ok) {
           setUser(data);
           setFormData({ ...data });
@@ -29,6 +42,7 @@ const ProfilePage = () => {
           message.error("Error fetching profile data");
         }
       } catch (error) {
+        console.log(error);
         message.error("Error fetching profile data");
       } finally {
         setLoading(false);
@@ -45,14 +59,16 @@ const ProfilePage = () => {
     setPasswords({ newPassword: "", confirmPassword: "" });
     setPasswordError(null);
     setConfirmPasswordError(null);
-    setFormData({ ...user }); // Reset to original user data
+    setFormData(user ? { ...user } : null); // Reset to original user data
   };
 
-  const handleChange = (e: any) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData((prev) =>
+      prev ? { ...prev, [e.target.name]: e.target.value } : null
+    );
   };
 
-  const handlePasswordChange = (e: any) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPasswords({ ...passwords, [name]: value });
 
@@ -96,9 +112,9 @@ const ProfilePage = () => {
     setIsLoading(true);
     try {
       console.log();
-      let formDataUpdate = {
-        userId: formData.id,
-        status: formData.status,
+      const formDataUpdate = {
+        userId: formData?.id,
+        status: formData?.status,
         newPassword: passwords.newPassword,
       };
       const res = await fetch("/api/profile/updateprofile", {
@@ -107,7 +123,7 @@ const ProfilePage = () => {
         body: JSON.stringify(formDataUpdate),
       });
 
-      const data = await res.json();
+      const data: UserType = await res.json();
       if (res.ok) {
         setUser(data);
         setEditing(false);
@@ -120,6 +136,7 @@ const ProfilePage = () => {
         message.error("Something went wrong! Please try after some time.");
       }
     } catch (error) {
+      console.log(error);
       message.error("Something went wrong! Please try after some time.");
     } finally {
       setIsLoading(false);
@@ -142,7 +159,7 @@ const ProfilePage = () => {
 
   return (
     <div>
-      <PageTitle title={`${user.username} - Profile Details`} />
+      <PageTitle title={`${user?.username} - Profile Details`} />
       <div className="min-h-screen flex justify-center items-center bg-gray-100">
         <div className="w-full max-w-3xl p-8 bg-white shadow-lg rounded-lg">
           {/* User Avatar */}
@@ -150,7 +167,7 @@ const ProfilePage = () => {
               <div className="w-32 h-32 flex items-center justify-center bg-gray-200 rounded-full border-4 border-gray-400 shadow-md">
                 <User size={80} className="text-gray-500" />
               </div>
-            <h2 className="text-3xl font-bold text-gray-800 mt-4">{user.username}</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mt-4">{user?.username}</h2>
           </div>
 
           {/* User Information Form */}
@@ -160,7 +177,7 @@ const ProfilePage = () => {
               <label className="block text-gray-700 font-bold mb-1">Email</label>
               <input
                 type="text"
-                value={user.email}
+                value={user?.email}
                 readOnly
                 className="w-full p-3 border rounded-md bg-gray-100 text-gray-700"
               />
@@ -171,7 +188,7 @@ const ProfilePage = () => {
               <label className="block text-gray-700 font-bold mb-1">Name</label>
               <input
                 type="text"
-                value={user.name || "N/A"}
+                value={user?.name || "N/A"}
                 readOnly
                 className="w-full p-3 border rounded-md bg-gray-100 text-gray-700"
               />
@@ -182,7 +199,7 @@ const ProfilePage = () => {
               {editing ? (
                 <select
                   name="status"
-                  value={formData.status}
+                  value={formData?.status}
                   onChange={handleChange}
                   className="w-full p-3 border rounded-md text-gray-700"
                 >
@@ -192,10 +209,10 @@ const ProfilePage = () => {
               ) : (
                 <input
                   type="text"
-                  value={user.status === 1 ? "Active" : "Inactive"}
+                  value={user?.status === 1 ? "Active" : "Inactive"}
                   readOnly
                   className={`w-full p-3 border rounded-md text-white font-semibold ${
-                    user.status === 1 ? "bg-green-500" : "bg-red-500"
+                    user?.status === 1 ? "bg-green-500" : "bg-red-500"
                   }`}
                 />
               )}
@@ -203,8 +220,8 @@ const ProfilePage = () => {
 
             {!editing && (
             <div className="mt-6 text-gray-700">
-              <p className="font-bold">Last Login: <span className="font-normal">{user.last_login ? new Date(user.last_login).toLocaleString() : "N/A"}</span></p>
-              <p className="font-bold">Joined: <span className="font-normal">{user.created_at ? new Date(user.created_at).toLocaleString() : "N/A"}</span></p>
+              <p className="font-bold">Last Login: <span className="font-normal">{user?.last_login ? new Date(user.last_login).toLocaleString() : "N/A"}</span></p>
+              <p className="font-bold">Joined: <span className="font-normal">{user?.created_at ? new Date(user.created_at).toLocaleString() : "N/A"}</span></p>
             </div>
             )}
 

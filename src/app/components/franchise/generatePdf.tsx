@@ -1,8 +1,8 @@
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import { saveAs } from "file-saver";
 
 interface values {
-    [key: string]: any; // Adjust based on actual data structure
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any; // Adjust based on actual data structure
 }
 
 interface franchise {

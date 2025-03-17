@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -33,8 +34,12 @@ const ForgotPasswordPage = () => {
       setEmail("");
       router.push("/login?successmessage=A password reset link has been sent to your email.");
       
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
@@ -48,12 +53,13 @@ const ForgotPasswordPage = () => {
         </div>
       )}
       <div className="bg-white p-8 rounded-lg shadow-lg w-120 border border-gray-300 relative">
-        <img
+      <Image
           src="/logo.jpg"
           alt="Logo"
           width={200}
           height={128}
           className="mx-auto mb-6"
+          priority
         />
         <p className="text-center mb-6 text-gray-600">
           Enter your email to reset your password

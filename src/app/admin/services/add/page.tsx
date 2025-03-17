@@ -1,9 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import ServicesForm from "@/app/components/services/serviceForm";
 
-const prisma = new PrismaClient();
-
-export default async function Franchiseform() {
+export default async function Serviceform() {
   return <ServicesForm/>;
 }
 

@@ -10,23 +10,20 @@ interface PageTitleProps {
 const PageTitle: React.FC<PageTitleProps> = ({ title }) => {
   const router = useRouter();
   const pathname = usePathname() || "/dashboard";
-  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
+    const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
 
     if (historyStack.length === 0 || historyStack[historyStack.length - 1] !== pathname) {
       historyStack.push(pathname);
       sessionStorage.setItem("historyStack", JSON.stringify(historyStack));
     }
-
-    setPreviousUrl(historyStack.length > 1 ? historyStack[historyStack.length - 2] : null);
   }, [pathname]);
 
   const handleBack = () => {
     setLoading(true);
-    let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
+    const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
 
     if (historyStack.length > 1) {
       historyStack.pop(); // Remove current page

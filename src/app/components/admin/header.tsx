@@ -4,7 +4,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react"; // Import signOut from NextAuth
 import { User, Search, Settings, Key, LogOut } from "lucide-react";
 import Image from "next/image";
-import { useRouter,usePathname } from "next/navigation"; // Import useRouter
+import { usePathname } from "next/navigation"; // Import useRouter
 import Loader from "./loader";
 
 const HeaderLayout = () => {
@@ -12,7 +12,6 @@ const HeaderLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [greeting, setGreeting] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const pathname = usePathname() || "";
 
   useEffect(() => {

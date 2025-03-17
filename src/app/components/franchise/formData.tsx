@@ -9,8 +9,8 @@ import PageTitle from "../admin/pagetitle";
 import generatePDF from "./generatePdf";
 import Loader from "../admin/loader";
 
-const isImage = (url:any) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
-const isPDF = (url:any) => /\.pdf$/i.test(url);
+const isImage = (url:string) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+const isPDF = (url:string) => /\.pdf$/i.test(url);
 
 interface FranchiseRecord {
   id: number;
@@ -58,16 +58,15 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
   const [form] = Form.useForm();
   const router = useRouter();
   const pathname = usePathname() || "/admin";
-  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
 
-  const handlePreview = (imageUrl:any) => {
+  const handlePreview = (imageUrl:string) => {
     setPreviewImage(imageUrl);
     setPreviewVisible(true);
   };
 
-  const renderDocument = (label:any, fileUrl:any) => {
+  const renderDocument = (label:string, fileUrl:string) => {
     if (!fileUrl) return "N/A";
 
     if (isPDF(fileUrl)) {
@@ -96,6 +95,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             preview={{ visible: false }} // ✅ Uses built-in preview only
             onClick={() => handlePreview(fileUrl)}
             style={{ cursor: "pointer", marginRight: 8 }}
+            alt="Image"
           />
           <Button
             type="link"
@@ -113,14 +113,12 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
   };
 
   useEffect(() => {
-    let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
+    const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
 
     if (historyStack.length === 0 || historyStack[historyStack.length - 1] !== pathname) {
       historyStack.push(pathname);
       sessionStorage.setItem("historyStack", JSON.stringify(historyStack));
     }
-
-    setPreviousUrl(historyStack.length > 1 ? historyStack[historyStack.length - 2] : null);
   }, [pathname]);
 
 
@@ -145,6 +143,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             message.error(result.message || "Failed to send email.");
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while sending the email.");
         } finally {
           setLoading(false);
@@ -153,9 +152,10 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSendEmailForApproval = async (type:string,gstNumber:any) => {
     try {
-      const response = await fetch(`/api/franchise/sendEmail?type=${encodeURIComponent(type)}&gstNumber=${encodeURIComponent(gstNumber)}`, {
+      await fetch(`/api/franchise/sendEmail?type=${encodeURIComponent(type)}&gstNumber=${encodeURIComponent(gstNumber)}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -163,13 +163,14 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
         body: JSON.stringify(franchiseData),
       });
     } catch (error) {
+      console.log(error);
       console.log("An error occurred while sending the email.");
     }
   };
   
 
   const handleBack = () => {
-    let historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
+    const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
 
     if (historyStack.length > 1) {
       historyStack.pop(); // Remove current page
@@ -189,12 +190,14 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
         setFranchiseData(updatedData.record);
       }
     } catch (error) {
+      console.log(error);
       message.error("Error fetching updated data");
     }
   };
 
   useEffect(() => {
     fetchFranchiseData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -221,14 +224,13 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
   const handleApprove = () => {
     setApproveModalVisible(true);
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const submitApproval = async (values: any) => {
     setLoading(true);
     try {
       const { gstNumber } = values;
       // Generate PDF and get the URL
       const pdfUrl = await generatePDF(franchise, values);
-      console.log("Saved PDF URL:", pdfUrl);
   
       // Assign franchiseCertificateUrl to values
       const updatedValues = { ...values, franchiseCertificateUrl: pdfUrl, status: 1 };
@@ -246,6 +248,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
         handleSendEmailForApproval("approve",gstNumber);
       }
     } catch (error) {
+      console.log(error);
       message.error("An error occurred while approving");
     } finally {
       setLoading(false);
@@ -271,6 +274,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             handleSendEmailForApproval("reject",null);
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while rejecting");
         } finally {
           setLoading(false);
@@ -292,6 +296,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             handleBack();
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while deleting the record");
         } finally {
           setLoading(false);
@@ -426,7 +431,7 @@ export default function FranchiseDetails({ franchise }: { franchise: FranchiseRe
             onVisibleChange: (visible) => !visible && setPreviewVisible(false),
           }}
         >
-          <Image src={previewImage} width={0} height={0} />
+          <Image src={previewImage} width={0} height={0} alt="Image" />
         </Image.PreviewGroup>
       )}
         </div>

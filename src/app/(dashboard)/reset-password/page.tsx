@@ -1,10 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { PrismaClient } from "@prisma/client";
 import "@ant-design/v5-patch-for-react-19";
-
-const prisma = new PrismaClient();
+import Image from "next/image";
 
 const ResetPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -113,8 +111,9 @@ const ResetPasswordPage = () => {
         router.push("/login?errormessage=Something went wrong!");
       }
     } catch (error) {
-       router.push("/login?errormessage=Something went wrong!");
-    }
+      console.error("Error resetting password:", error);
+      router.push("/login?errormessage=Something went wrong!");
+   }
   };
 
   return (
@@ -125,13 +124,13 @@ const ResetPasswordPage = () => {
         </div>
       )}
       <div className="bg-white p-8 rounded-lg shadow-lg w-120 border border-gray-300">
-        <img
-            src="/logo.jpg"
-            alt="Logo"
-            width={200}
-            height={128}
-            className="mx-auto mb-6"
-          />
+        <Image 
+          src="/logo.jpg"
+          alt="Logo"
+          width={200}
+          height={128}
+          className="mx-auto mb-6"
+        />
         <h2 className="text-center text-lg font-semibold mb-4">Reset Password</h2>
         {errors.form && <p className="text-red-500 text-center">{errors.form}</p>}
         {message && <p className="text-green-500 text-center">{message}</p>}

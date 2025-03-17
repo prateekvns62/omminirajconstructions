@@ -3,9 +3,9 @@ import UpdateCertificateForm from "@/app/components/certificates/updateCertifica
 
 const prisma = new PrismaClient();
 
-export default async function CertificateDetailPage({ params }: { params: { id: string } }) {
+export default async function CertificateDetailPage({ params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params;  // No need to await params
+    const { id } = await params;  // No need to await params
 
     const userId = parseInt(id, 10);
     

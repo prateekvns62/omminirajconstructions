@@ -3,7 +3,7 @@ import TableData from "@/app/components/services/tableData";
 
 const prisma = new PrismaClient();
 
-export default async function Contact() {
+export default async function ServiceAll() {
   try {
     const services = await prisma.ourServices.findMany({
       orderBy: {
@@ -13,6 +13,7 @@ export default async function Contact() {
 
     return <TableData services={services} />;
   } catch (error) {
+    console.log(error);
     return <p>No record found.</p>;
   } finally {
     await prisma.$disconnect(); // Ensure Prisma disconnects after query execution
