@@ -54,6 +54,7 @@ const ProfilePage = ({ user }: { user: ProfileType | null }) => {
       const data = await response.json();
       setFormData(data);
     } catch (error) {
+      console.log(error);
       message.error("Error fetching profile data");
     } finally {
       setLoading(false);
@@ -121,6 +122,7 @@ const ProfilePage = ({ user }: { user: ProfileType | null }) => {
         message.error("Something went wrong.");
       }
     } catch (error) {
+      console.log(error);
       message.error("Something went wrong.");
     } finally {
       setIsLoading(false);

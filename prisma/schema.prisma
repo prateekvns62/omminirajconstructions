@@ -158,6 +158,7 @@ model branches {
   location   String
   priority   Int
   mapIframe  String
+  createdAt  DateTime  @default(now())
 }
 
 model Distributor {
@@ -171,6 +172,7 @@ model Distributor {
   position String
   branchCode String
   mapIframe  String
+  createdAt  DateTime  @default(now())
 }
 
 model imageGallery {
@@ -186,6 +188,7 @@ model ourClients {
   name     String?
   location String?
   image    String?
+  createdAt DateTime  @default(now())
 }
 
 model ongoingProjects {

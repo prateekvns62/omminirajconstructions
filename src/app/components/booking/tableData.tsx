@@ -1,5 +1,5 @@
 "use client";
-import { Table, Input, Select, Button, Tag, Modal, Tooltip, DatePicker, Skeleton, message } from "antd";
+import { Table, Input, Select, Button, Tag, Modal, DatePicker, Skeleton, message } from "antd";
 import { SearchOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined, ClockCircleOutlined, SyncOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
@@ -62,6 +62,7 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value);
   const handleStatusFilterChange = (value: number | null) => setFilteredStatus(value ?? null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDateRangeChange = (dates: any) => {
     if (!dates || !dates[0] || !dates[1]) {
         setDateRange([null, null]);
@@ -91,6 +92,7 @@ export default function TableData({ booking }: { booking: BookingType[] }) {
             message.error("Failed to delete record");
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while deleting the record");
         } finally {
           setIsLoading(false);

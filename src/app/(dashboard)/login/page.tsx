@@ -1,9 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import "@ant-design/v5-patch-for-react-19";
 import { message } from "antd";
+import Image from "next/image";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -13,26 +14,25 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  var successmessage = searchParams?.get("successmessage");
-  var errormessage = searchParams?.get("errormessage");
+  const successmessageRef = useRef(searchParams?.get("successmessage"));
+  const errormessageRef = useRef(searchParams?.get("errormessage"));
 
   useEffect(() => {
-    if (successmessage) {
-      message.success(successmessage);
-      
-    } 
-
-    if(errormessage){
-      message.error(errormessage);
+    if (successmessageRef.current) {
+      message.success(successmessageRef.current);
     }
-
-    if (successmessage || errormessage) {
-      successmessage = null;
-      errormessage = null;
+  
+    if (errormessageRef.current) {
+      message.error(errormessageRef.current);
+    }
+  
+    if (successmessageRef.current || errormessageRef.current) {
+      successmessageRef.current = null;
+      errormessageRef.current = null;
       const currentPath = window.location.pathname;
       router.replace(currentPath, { scroll: false });
     }
-  }, [successmessage, errormessage]);
+  }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +50,7 @@ const LoginPage = () => {
       setLoading(false);
       return;
     }
+    message.success("Logged In Successfully!");
     setLoading(false);
     router.replace("/admin");
   };
@@ -61,14 +62,8 @@ const LoginPage = () => {
           <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin shadow-lg"></div>
         </div>
       )}
-      <div className="bg-white p-8 rounded-lg shadow-lg w-120 border border-gray-300">
-        <img
-          src="/logo.jpg"
-          alt="Logo"
-          width={200}
-          height={128}
-          className="mx-auto mb-6"
-        />
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full sm:w-120 border border-gray-300 sm:h-fit h-screen flex flex-col justify-center">
+        <Image src="/logo.jpg" alt="Logo" width={150} height={96} className="mx-auto mb-6" priority />
         <p className="text-center mb-6 text-gray-600">
           Enter your credentials to continue
         </p>
@@ -98,16 +93,6 @@ const LoginPage = () => {
           {/* Keep me logged in and Forgot Password in the same line */}
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="keepLoggedIn"
-                checked={keepLoggedIn}
-                onChange={() => setKeepLoggedIn(!keepLoggedIn)}
-                className="h-4 w-4 border-gray-300 rounded"
-              />
-              <label htmlFor="keepLoggedIn" className="ml-2 text-sm text-gray-600">
-                Keep me logged in
-              </label>
             </div>
             <div>
               <a href="/forgot-password" className="text-blue-600 text-sm hover:underline">

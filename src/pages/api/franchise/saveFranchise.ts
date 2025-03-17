@@ -76,8 +76,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const dateMonth = new Date().toISOString().slice(5, 7) + new Date().toISOString().slice(8, 10);
         const franchiseId = `OM_${last4Digits}_${dateMonth}`;
 
-        const completeFormData = { ...rawFields, ...filePaths, franchiseId };
-
         try {
             const franchise = await prisma.franchiseRecord.create({
                 

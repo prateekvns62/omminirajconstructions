@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { hash } from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
-import Password from "antd/es/input/Password";
 
 const prisma = new PrismaClient();
 
@@ -22,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ message: "User Not found!" });
     }
 
-    let updateData: { status?: number; password?: string } = {};
+    const updateData: { status?: number; password?: string } = {};
 
     // Validate and hash password if provided
     if (newPassword && typeof newPassword === "string" && newPassword.trim() !== "") {

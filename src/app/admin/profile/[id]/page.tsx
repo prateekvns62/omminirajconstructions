@@ -3,9 +3,9 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function FranchiseDetailPage({ params }: { params: { id: string } }) {
+export default async function FranchiseDetailPage({ params }: { params: Promise <{ id: string }> }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const userId = parseInt(id, 10);
     
     if (isNaN(userId)) return <p className="text-red-500 text-center">Invalid Profile ID</p>;

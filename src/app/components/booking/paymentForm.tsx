@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Script from 'next/script';
-import { Button } from '@/components/ui/button';
-import Label from '@/components/ui/Label';
 import { useRouter } from "next/navigation";
 import { message,Skeleton, Card } from "antd";
 import Loader from '../admin/loader';
@@ -42,6 +40,12 @@ interface PaymentDetailsType {
     updatedAt: string | Date;
 }
 
+interface RazorpayResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+}
+
 export default function BookingPayment({ booking }: { booking: BookingType }) {
     const [currency] = useState('INR');
     const [loading, setLoading] = useState(false);
@@ -54,7 +58,7 @@ export default function BookingPayment({ booking }: { booking: BookingType }) {
         }
       }, [booking]);
 
-    const createOrderId = async () => {
+    const createOrderId = async (): Promise<string | null> => {
         try {
             const response = await fetch('/api/order/create', {
                 method: 'POST',
@@ -67,6 +71,7 @@ export default function BookingPayment({ booking }: { booking: BookingType }) {
             const data = await response.json();
             return data.orderId;
         } catch (error) {
+            console.log(error);
             message.error('Something went wrong!');
             return null;
         }
@@ -85,13 +90,13 @@ export default function BookingPayment({ booking }: { booking: BookingType }) {
             }
 
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
                 amount: Number(booking.plotSize) * 100,
                 currency,
-                name: process.env.NEXT_PUBLIC_BUSINESS_NAME,
-                description: process.env.NEXT_PUBLIC_PAYMENT_DESCRIPTION,
+                name: process.env.NEXT_PUBLIC_BUSINESS_NAME as string,
+                description: process.env.NEXT_PUBLIC_PAYMENT_DESCRIPTION as string,
                 order_id: orderId,
-                handler: async (response: any) => {
+                handler: async (response: RazorpayResponse) => {
                     const data = {
                         orderCreationId: orderId,
                         razorpayPaymentId: response.razorpay_payment_id,
@@ -108,18 +113,24 @@ export default function BookingPayment({ booking }: { booking: BookingType }) {
                     });
 
                     const res = await result.json();
-                    res.isOk ? router.refresh() : message.error(res.message);
+                    if (res.isOk) {
+                        router.refresh();
+                    } else {
+                        message.error(res.message);
+                    }
                 },
                 prefill: { name: booking.name, email: booking.email },
                 theme: { color: '#3399cc' },
             };
 
-            const paymentObject = new (window as any).Razorpay(options);
-            paymentObject.on('payment.failed', (response: any) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const paymentObject = new (window as unknown as { Razorpay: new (options: unknown) => any }).Razorpay(options);
+            paymentObject.on('payment.failed', (response: { error: { description: string } }) => {
                 message.error(response.error.description);
             });
             paymentObject.open();
         } catch (error) {
+            console.log(error);
             message.error('Payment error');
         } finally {
             setLoading(false);

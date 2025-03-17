@@ -4,7 +4,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react"; // Import signOut from NextAuth
 import { User, Search, Settings, Key, LogOut } from "lucide-react";
 import Image from "next/image";
-import { useRouter,usePathname } from "next/navigation"; // Import useRouter
+import { usePathname } from "next/navigation"; // Import useRouter
 import Loader from "./loader";
 
 const HeaderLayout = () => {
@@ -12,7 +12,6 @@ const HeaderLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [greeting, setGreeting] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const pathname = usePathname() || "";
 
   useEffect(() => {
@@ -49,7 +48,7 @@ const HeaderLayout = () => {
         <Image src="/logo.jpg" alt="Logo" width={100} height={40} className="h-auto" />
 
         {/* Search Bar */}
-        <div className="relative w-1/3">
+        <div className="relative w-1/3 hidden md:block">
           <input
             type="text"
             placeholder="Search..."
@@ -81,17 +80,17 @@ const HeaderLayout = () => {
               onMouseLeave={() => setIsOpen(false)}
               style={{ top: "100%" }}
             >
-              <Link href="/admin/profile" className="flex items-center px-4 py-2 hover:bg-gray-100" onClick={handleRedirect}>
+              <Link href="/admin/profile" className="flex items-center px-4 py-2 hover:bg-gray-100 text-black" onClick={handleRedirect}>
                 <User size={18} className="mr-2 text-blue-500" />
                 Profile
               </Link>
-              <Link href="/admin/profile/change-password" className="flex items-center px-4 py-2 hover:bg-gray-100" onClick={handleRedirect}>
+              <Link href="/admin/profile/change-password" className="flex items-center px-4 py-2 hover:bg-gray-100 text-black" onClick={handleRedirect}>
                 <Key size={18} className="mr-2 text-yellow-500" />
                 Change Password
               </Link>
               <button
                 onClick={handleLogout} // Logout Logic
-                className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100"
+                className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100 text-black"
               >
                 <LogOut size={18} className="mr-2 text-red-500" />
                 Logout

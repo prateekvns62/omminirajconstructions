@@ -3,7 +3,8 @@ import FormData from "@/app/components/booking/formData";
 
 const prisma = new PrismaClient();
 
-export default async function BookingDetailPage({ params }: { params: { id: string } }) {
+
+export default async function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
 

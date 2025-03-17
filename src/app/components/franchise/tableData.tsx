@@ -1,5 +1,5 @@
 "use client";
-import { Table, Input, Select, Button, Tag, Modal, Tooltip, DatePicker, Skeleton, message } from "antd";
+import { Table, Input, Select, Button, Tag, Modal, DatePicker, Skeleton, message } from "antd";
 import { CloseCircleOutlined, CheckCircleOutlined, ClockCircleOutlined, SearchOutlined, EditOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import { useState, useEffect } from "react";
@@ -52,6 +52,7 @@ export default function TableData({ records }: { records: FranchiseRecord[] }) {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value);
   const handleStatusFilterChange = (value: number | null) => setFilteredStatus(value ?? null);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDateRangeChange = (dates: any) => {
     setDateRange(dates ? [dates[0].format("YYYY-MM-DD"), dates[1].format("YYYY-MM-DD")] : [null, null]);
   };
@@ -83,6 +84,7 @@ export default function TableData({ records }: { records: FranchiseRecord[] }) {
             message.error("Failed to delete record");
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while deleting the record");
         } finally {
           setIsLoading(false);

@@ -34,9 +34,6 @@ export default function TableData({ users }: { users: ProfileType[] }) {
     current: 1,
     pageSize: 20,
   });
-
-  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
-
   
   const handleTableChange = (pagination: TablePaginationConfig) => {
     setPagination({ current: pagination.current!, pageSize: pagination.pageSize! });
@@ -55,7 +52,7 @@ export default function TableData({ users }: { users: ProfileType[] }) {
 
   const handleStatusFilterChange = (value: number | null) => setFilteredStatus(value ?? null);
 
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDateRangeChange = (dates: any) => {
     if (!dates || !dates[0] || !dates[1]) {
         setDateRange([null, null]); // Reset if no dates selected
@@ -85,6 +82,7 @@ export default function TableData({ users }: { users: ProfileType[] }) {
             message.error("Failed to delete record");
           }
         } catch (error) {
+          console.log(error);
           message.error("An error occurred while deleting the record");
         } finally {
           setIsLoading(false);
@@ -105,6 +103,7 @@ export default function TableData({ users }: { users: ProfileType[] }) {
     return item.name.toLowerCase().includes(search) || item.email.toLowerCase().includes(search) || item.username.includes(search);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isDateInRange = (created_at: any) => {
     if (!dateRange[0] || !dateRange[1]) return true;
     
