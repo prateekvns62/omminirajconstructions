@@ -48,7 +48,7 @@ const HeaderLayout = () => {
         <Image src="/logo.jpg" alt="Logo" width={100} height={40} className="h-auto" />
 
         {/* Search Bar */}
-        <div className="relative w-1/3">
+        <div className="relative w-1/3 hidden md:block">
           <input
             type="text"
             placeholder="Search..."
