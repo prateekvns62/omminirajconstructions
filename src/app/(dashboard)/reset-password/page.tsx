@@ -123,14 +123,8 @@ const ResetPasswordPage = () => {
           <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin shadow-lg"></div>
         </div>
       )}
-      <div className="bg-white p-8 rounded-lg shadow-lg w-120 border border-gray-300">
-        <Image 
-          src="/logo.jpg"
-          alt="Logo"
-          width={200}
-          height={128}
-          className="mx-auto mb-6"
-        />
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full sm:w-120 border border-gray-300 sm:h-fit h-screen flex flex-col justify-center">
+      <Image src="/logo.jpg" alt="Logo" width={150} height={96} className="mx-auto mb-6" priority />
         <h2 className="text-center text-lg font-semibold mb-4">Reset Password</h2>
         {errors.form && <p className="text-red-500 text-center">{errors.form}</p>}
         {message && <p className="text-green-500 text-center">{message}</p>}

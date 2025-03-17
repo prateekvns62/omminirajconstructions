@@ -52,15 +52,8 @@ const ForgotPasswordPage = () => {
           <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin shadow-lg"></div>
         </div>
       )}
-      <div className="bg-white p-8 rounded-lg shadow-lg w-120 border border-gray-300 relative">
-      <Image
-          src="/logo.jpg"
-          alt="Logo"
-          width={200}
-          height={128}
-          className="mx-auto mb-6"
-          priority
-        />
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full sm:w-120 border border-gray-300 sm:h-fit h-screen flex flex-col justify-center relative">
+        <Image src="/logo.jpg" alt="Logo" width={150} height={96} className="mx-auto mb-6" priority />
         <p className="text-center mb-6 text-gray-600">
           Enter your email to reset your password
         </p>

@@ -80,17 +80,17 @@ const HeaderLayout = () => {
               onMouseLeave={() => setIsOpen(false)}
               style={{ top: "100%" }}
             >
-              <Link href="/admin/profile" className="flex items-center px-4 py-2 hover:bg-gray-100" onClick={handleRedirect}>
+              <Link href="/admin/profile" className="flex items-center px-4 py-2 hover:bg-gray-100 text-black" onClick={handleRedirect}>
                 <User size={18} className="mr-2 text-blue-500" />
                 Profile
               </Link>
-              <Link href="/admin/profile/change-password" className="flex items-center px-4 py-2 hover:bg-gray-100" onClick={handleRedirect}>
+              <Link href="/admin/profile/change-password" className="flex items-center px-4 py-2 hover:bg-gray-100 text-black" onClick={handleRedirect}>
                 <Key size={18} className="mr-2 text-yellow-500" />
                 Change Password
               </Link>
               <button
                 onClick={handleLogout} // Logout Logic
-                className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100"
+                className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100 text-black"
               >
                 <LogOut size={18} className="mr-2 text-red-500" />
                 Logout

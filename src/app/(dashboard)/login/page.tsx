@@ -50,6 +50,7 @@ const LoginPage = () => {
       setLoading(false);
       return;
     }
+    message.success("Logged In Successfully!");
     setLoading(false);
     router.replace("/admin");
   };
@@ -61,8 +62,8 @@ const LoginPage = () => {
           <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin shadow-lg"></div>
         </div>
       )}
-      <div className="bg-white p-8 rounded-lg shadow-lg w-120 border border-gray-300">
-        <Image src="/logo.jpg" alt="Logo" width={200} height={128} className="mx-auto mb-6" priority />
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full sm:w-120 border border-gray-300 sm:h-fit h-screen flex flex-col justify-center">
+        <Image src="/logo.jpg" alt="Logo" width={150} height={96} className="mx-auto mb-6" priority />
         <p className="text-center mb-6 text-gray-600">
           Enter your credentials to continue
         </p>
@@ -92,16 +93,6 @@ const LoginPage = () => {
           {/* Keep me logged in and Forgot Password in the same line */}
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="keepLoggedIn"
-                checked={keepLoggedIn}
-                onChange={() => setKeepLoggedIn(!keepLoggedIn)}
-                className="h-4 w-4 border-gray-300 rounded"
-              />
-              <label htmlFor="keepLoggedIn" className="ml-2 text-sm text-gray-600">
-                Keep me logged in
-              </label>
             </div>
             <div>
               <a href="/forgot-password" className="text-blue-600 text-sm hover:underline">

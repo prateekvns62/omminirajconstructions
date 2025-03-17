@@ -42,7 +42,7 @@ const PageTitle: React.FC<PageTitleProps> = ({ title }) => {
   return (
     <>
     <div className="flex justify-between items-center py-4 border-b mx-4">
-      <h4 className="text-2xl font-bold">{title}</h4>
+      <h4 className="text-2xl font-bold text-black">{title}</h4>
       <button
         onClick={handleBack}
         className="flex items-center space-x-2 text-blue-600 hover:underline"
