@@ -1,77 +1,39 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Descriptions, Tag, Button, Modal, message,Skeleton, Card, Image } from "antd";
-import { DownloadOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
+import { Descriptions, Tag, Button, Modal, message,Skeleton, Card } from "antd";
+import { EditOutlined, CheckCircleOutlined, CloseCircleOutlined, DeleteOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import '@ant-design/v5-patch-for-react-19';
 import { usePathname, useRouter } from "next/navigation";
 import PageTitle from "../admin/pagetitle";
 import Loader from "../admin/loader";
 import { format } from "date-fns";
 
-const isImage = (url:string) => /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
-
-interface BranchType {
+interface CareerType {
   id: number;
-  branchCode: string;
-  branchName: string;
-  location: string;
-  priority: number;
-  image: string;
-  status: boolean;
-  mapIframe: string;
+  jobTitle: string;
+  jobDescription: string;
+  jobCategory: string;
+  jobType: string;
+  jobLocation: string;
+  status: number;
   createdAt: string | Date;
 }
 
-export default function BranchDetails({ branch }: { branch: BranchType }) {
+export default function BranchDetails({ career }: { career: CareerType }) {
   const [isLoading, setIsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname() || "/admin";
-  const [previewVisible, setPreviewVisible] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-
-  const handlePreview = (imageUrl:string) => {
-    setPreviewImage(imageUrl);
-    setPreviewVisible(true);
-  };
 
   const getStatusTag = () => {
     const tagStyle = { fontSize: "15px", padding: "2px 12px" };
-    if(!branch.status){
+    if(!career.status){
       return <Tag icon={<CloseCircleOutlined />} color="red" style={tagStyle}>Inactive</Tag>;
     } else {
       return <Tag icon={<CheckCircleOutlined />} color="green" style={tagStyle}>Active</Tag>;
     }
   };
 
-  const renderDocument = (fileUrl:string) => {
-    if (!fileUrl) return "N/A";
-
-    if (isImage(fileUrl)) {
-      return (
-        <>
-          <Image
-            width={50}
-            src={fileUrl}
-            preview={{ visible: false }} // ✅ Uses built-in preview only
-            onClick={() => handlePreview(fileUrl)}
-            style={{ cursor: "pointer", marginRight: 8 }}
-            alt="Image"
-          />
-          <Button
-            type="link"
-            icon={<DownloadOutlined />}
-            href={fileUrl}
-            download
-          >
-            Download
-          </Button>
-        </>
-      );
-    }
-
-    return "Unsupported file type";
-  };
 
   useEffect(() => {
     const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
@@ -98,10 +60,10 @@ export default function BranchDetails({ branch }: { branch: BranchType }) {
   };
 
   useEffect(() => {
-    if (branch) {
+    if (career) {
       setIsLoading(false);
     }
-  }, [branch]);
+  }, [career]);
 
 
   if (isLoading) {
@@ -125,7 +87,7 @@ export default function BranchDetails({ branch }: { branch: BranchType }) {
       onOk: async () => {
         setLoading(true);
         try {
-          const response = await fetch(`/api/branches/${branch.id}`, { method: "DELETE" });
+          const response = await fetch(`/api/careers/${career.id}`, { method: "DELETE" });
           if (response.ok) {
             message.success("Record deleted successfully");
             handleBack();
@@ -141,16 +103,16 @@ export default function BranchDetails({ branch }: { branch: BranchType }) {
   };
 
   const handleEdit = () => {
-      router.push(`/admin/branches/update/${branch.id}`);
+      router.push(`/admin/careers/update/${career.id}`);
   };
 
   return (
     <div>
-      <PageTitle title={`${branch.branchName}`} />
+      <PageTitle title={`${career.jobTitle}`} />
       <div className="p-6 bg-white shadow-md rounded-lg space-y-6">
         <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-bold flex items-center space-x-2">
-          <span>Branch Status : {getStatusTag()}</span>
+          <span>Career Status : {getStatusTag()}</span>
         </h2>
         <div className="space-x-3">
         <Button
@@ -173,30 +135,16 @@ export default function BranchDetails({ branch }: { branch: BranchType }) {
       </div>
       <div>
         <Descriptions bordered column={1} size="middle" title="Basic Details">
-          <Descriptions.Item label="Branch Code">{branch.branchCode}</Descriptions.Item>
-          <Descriptions.Item label="Branch Title">{branch.branchName}</Descriptions.Item>
-          <Descriptions.Item label="Branch location">{branch.location}</Descriptions.Item>
-          <Descriptions.Item label="Priority">{branch.priority}</Descriptions.Item>
-
+          <Descriptions.Item label="Job Title">{career.jobTitle}</Descriptions.Item>
+          <Descriptions.Item label="Job Description">{career.jobDescription}</Descriptions.Item>
+          <Descriptions.Item label="Job Category">{career.jobCategory}</Descriptions.Item>
+          <Descriptions.Item label="Job Type">{career.jobType}</Descriptions.Item>
+          <Descriptions.Item label="Job location">{career.jobLocation}</Descriptions.Item>
           <Descriptions.Item label="Status">{getStatusTag()}</Descriptions.Item>
           <Descriptions.Item label="Created At">
-            {format(new Date(branch.createdAt), "dd MMM yyyy, hh:mm a")}
+            {format(new Date(career.createdAt), "dd MMM yyyy, hh:mm a")}
           </Descriptions.Item>
-          <Descriptions.Item label="Branch Image" >
-            {renderDocument(branch.image)}
-          </Descriptions.Item>
-          <Descriptions.Item label="Map"><div dangerouslySetInnerHTML={{ __html: branch.mapIframe }} /></Descriptions.Item>
         </Descriptions>
-        {previewVisible && (
-            <Image.PreviewGroup
-              preview={{
-                visible: previewVisible,
-                onVisibleChange: (visible) => !visible && setPreviewVisible(false),
-              }}
-            >
-              <Image src={previewImage} width={0} height={0} alt="Image" />
-            </Image.PreviewGroup>
-          )}
       </div>
       </div>
       {loading && (<Loader/>)}

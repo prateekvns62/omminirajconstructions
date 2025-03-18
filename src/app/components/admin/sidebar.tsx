@@ -78,12 +78,13 @@ const menuItems = [
       ],
   },
   { 
-      name: "Ongoing Projects", 
-      path: "/admin/ongoing-projects", 
+      name: "Careers", 
+      path: "/admin/careers", 
       icon: <Clipboard size={18} color="brown" />,
       subMenu: [
-          { name: "All Projects", path: "/admin/ongoing-projects/all" },
-          { name: "Add Project", path: "/admin/ongoing-projects/add" },
+          { name: "All Jobs", path: "/admin/careers/all" },
+          { name: "Add Job", path: "/admin/careers/add" },
+          { name: "Job Applictions", path: "/admin/careers/application" },
       ],
   },
   { 

@@ -10,22 +10,21 @@ import PageTitle from "../admin/pagetitle";
 import Loader from "../admin/loader";
 import { format } from "date-fns";
 
-interface BranchType {
+interface CareerType {
   id: number;
-  branchCode: string;
-  branchName: string;
-  location: string;
-  priority: number;
-  image: string;
-  status: boolean;
-  mapIframe: string;
+  jobTitle: string;
+  jobDescription: string;
+  jobCategory: string;
+  jobType: string;
+  jobLocation: string;
+  status: number;
   createdAt: string | Date;
 }
 
-export default function TableData({ branches }: { branches: BranchType[] }) {
+export default function TableData({ careers }: { careers: CareerType[] }) {
   const [searchText, setSearchText] = useState<string>("");
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
-  const [tableData, setTableData] = useState<BranchType[]>([]);
+  const [tableData, setTableData] = useState<CareerType[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
@@ -41,10 +40,10 @@ export default function TableData({ branches }: { branches: BranchType[] }) {
 
   useEffect(() => {
     setTimeout(() => {
-      setTableData(branches);
+      setTableData(careers);
       setLoading(false);
     }, 2000);
-  }, [branches]);
+  }, [careers]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value);
 
@@ -58,7 +57,7 @@ export default function TableData({ branches }: { branches: BranchType[] }) {
       onOk: async () => {
         setIsLoading(true);
         try {
-          const response = await fetch(`/api/branches/${id}`, { method: "DELETE" });
+          const response = await fetch(`/api/careers/${id}`, { method: "DELETE" });
           if (response.ok) {
             setTableData((prev) => prev.filter((item) => item.id !== id));
             message.success("Record deleted successfully");
@@ -77,21 +76,21 @@ export default function TableData({ branches }: { branches: BranchType[] }) {
 
   const handleEdit = (id: number) => {
     setIsLoading(true);
-    router.push(`/admin/branches/${id}`);
+    router.push(`/admin/careers/${id}`);
   } 
 
   const handleSelectChange = (keys: React.Key[]) => setSelectedRowKeys(keys.map((key) => key as number));
 
-  const isSearchMatch = (item: BranchType) => {
+  const isSearchMatch = (item: CareerType) => {
     const search = searchText.toLowerCase();
-    return item.branchName.toLowerCase().includes(search) || item.branchCode.toLowerCase().includes(search) || item.location.toLowerCase().includes(search);
+    return item.jobTitle.toLowerCase().includes(search) || item.jobCategory.toLowerCase().includes(search) || item.jobType.toLowerCase().includes(search) || item.jobLocation.toLowerCase().includes(search);
   };
 
   
 
   const filteredData = tableData.filter((item) => isSearchMatch(item));
 
-  const getStatusTag = (status: boolean) => (
+  const getStatusTag = (status: number) => (
     <Tooltip title={status ? "Active" : "Inactive"}>
       <Tag color={status ? "green" : "red"}>
         {status  ? <CheckCircleOutlined style={{ marginRight: 5 }} /> : <CloseCircleOutlined style={{ marginRight: 5 }} />} {status ? "Active" : "Inactive"}
@@ -99,12 +98,12 @@ export default function TableData({ branches }: { branches: BranchType[] }) {
     </Tooltip>
   );
 
-  const columns: ColumnsType<BranchType> = [
-    { title: "Branch Name", dataIndex: "branchName", sorter: (a, b) => a.branchName.localeCompare(b.branchName), width: 200 },
-    { title: "Branch Code", dataIndex: "branchCode", sorter: (a, b) => a.branchCode.localeCompare(b.branchCode), width: 100 },
-    { title: "Branch Location", dataIndex: "location", sorter: (a, b) => a.location.localeCompare(b.location), width: 150 },
-    { title: "Priority", dataIndex: "priority",  width: 80 },
-    { title: "Status", dataIndex: "status", render: (_, record) => getStatusTag(record.status), width: 100 },
+  const columns: ColumnsType<CareerType> = [
+    { title: "Job Title", dataIndex: "jobTitle", sorter: (a, b) => a.jobTitle.localeCompare(b.jobTitle), width: 200 },
+    { title: "Job Category", dataIndex: "jobCategory", sorter: (a, b) => a.jobCategory.localeCompare(b.jobCategory), width: 150 },
+    { title: "Job Type", dataIndex: "jobType", sorter: (a, b) => a.jobType.localeCompare(b.jobType), width: 100 },
+    { title: "Job Location", dataIndex: "jobLocation", sorter: (a, b) => a.jobLocation.localeCompare(b.jobLocation), width: 150 },
+    { title: "Status", dataIndex: "status", render: (_, record) => getStatusTag(record.status), width: 80 },
     { title: "Created At", dataIndex: "createdAt",sorter: (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(), render: (createdAt) => format(new Date(createdAt), "dd MMM yyyy, hh:mm a"), width: 180 },
     {
       title: "Actions",
@@ -121,10 +120,10 @@ export default function TableData({ branches }: { branches: BranchType[] }) {
 
   return (
     <div>
-      <PageTitle title="Branch Records" />
+      <PageTitle title="Jobs Records" />
     <div className="p-4">
       <div className="flex gap-4 mb-4">
-        <Input placeholder="Search by Branch name, code or location..." prefix={<SearchOutlined />} onChange={handleSearch} className="w-1/4" />
+        <Input placeholder="Search by Job Name, Type, Category or Location..." prefix={<SearchOutlined />} onChange={handleSearch} className="w-1/4" />
       </div>
 
       {loading ? (

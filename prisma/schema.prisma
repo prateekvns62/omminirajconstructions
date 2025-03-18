@@ -157,7 +157,7 @@ model branches {
   branchName String
   location   String
   priority   Int
-  mapIframe  String
+  mapIframe  String @db.Text
   image      String
   status   Boolean @default(true)
   createdAt  DateTime  @default(now())
@@ -173,7 +173,7 @@ model Distributor {
   tahsil   String
   position String
   branchCode String
-  mapIframe  String
+  mapIframe  String @db.Text
   createdAt  DateTime  @default(now())
 }
 
@@ -198,5 +198,33 @@ model ongoingProjects {
   type        Int  // "portrait" or "landscape"
   linkType    Int  //"url" or "iframe"
   youtubeLink String?
-  iframeLink  String?
+  iframeLink  String? @db.Text
 }
+
+
+model jobOpenings {
+  id            Int    @id @default(autoincrement())
+  jobTitle      String
+  jobDescription String @db.Text
+  createdAt     DateTime @default(now())
+  jobCategory   String
+  jobType       String
+  jobLocation   String
+  status       Int     @default(0) // 0 - Publish, 1 - Closed
+  applications  jobApplication[] @relation("jobApplication") // No need to specify fields & references here
+}
+
+model jobApplication {
+  id           Int     @id @default(autoincrement())
+  name         String
+  email        String  @unique
+  contact      String
+  coverLetter  String  @db.Text
+  resume       String
+  status       Int     @default(0) // 0 - Pending, 1 - Accepted, 2 - Rejected
+  createdAt    DateTime @default(now())
+  submittedBy  Int     // 0 - User, 1 - Admin
+  jobId        Int
+  job          jobOpenings     @relation("jobApplication", fields: [jobId], references: [id])
+}
+
