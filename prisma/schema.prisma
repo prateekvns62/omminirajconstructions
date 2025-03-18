@@ -158,6 +158,8 @@ model branches {
   location   String
   priority   Int
   mapIframe  String
+  image      String
+  status   Boolean @default(true)
   createdAt  DateTime  @default(now())
 }
 
