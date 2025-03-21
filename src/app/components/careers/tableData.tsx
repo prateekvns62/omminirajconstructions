@@ -12,6 +12,7 @@ import { format } from "date-fns";
 
 interface CareerType {
   id: number;
+  jobIdentifire: string;
   jobTitle: string;
   jobDescription: string;
   jobCategory: string;
@@ -83,7 +84,7 @@ export default function TableData({ careers }: { careers: CareerType[] }) {
 
   const isSearchMatch = (item: CareerType) => {
     const search = searchText.toLowerCase();
-    return item.jobTitle.toLowerCase().includes(search) || item.jobCategory.toLowerCase().includes(search) || item.jobType.toLowerCase().includes(search) || item.jobLocation.toLowerCase().includes(search);
+    return item.jobTitle.toLowerCase().includes(search) || item.jobCategory.toLowerCase().includes(search) || item.jobType.toLowerCase().includes(search) || item.jobLocation.toLowerCase().includes(search) || item.jobIdentifire.toLowerCase().includes(search);
   };
 
   
@@ -99,6 +100,7 @@ export default function TableData({ careers }: { careers: CareerType[] }) {
   );
 
   const columns: ColumnsType<CareerType> = [
+    { title: "Job Identifire", dataIndex: "jobIdentifire", sorter: (a, b) => a.jobIdentifire.localeCompare(b.jobIdentifire), width: 200 },
     { title: "Job Title", dataIndex: "jobTitle", sorter: (a, b) => a.jobTitle.localeCompare(b.jobTitle), width: 200 },
     { title: "Job Category", dataIndex: "jobCategory", sorter: (a, b) => a.jobCategory.localeCompare(b.jobCategory), width: 150 },
     { title: "Job Type", dataIndex: "jobType", sorter: (a, b) => a.jobType.localeCompare(b.jobType), width: 100 },

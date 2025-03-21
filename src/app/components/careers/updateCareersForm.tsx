@@ -6,9 +6,18 @@ import { useRouter } from "next/navigation";
 import { message } from "antd";
 import Loader from "../admin/loader";
 import '@ant-design/v5-patch-for-react-19';
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Bold from "@tiptap/extension-bold";
+import Italic from "@tiptap/extension-italic";
+import Underline from "@tiptap/extension-underline";
+import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
+import Heading from "@tiptap/extension-heading";
 
 interface CareerType {
     id: number;
+    jobIdentifire: string;
     jobTitle: string;
     jobDescription: string;
     jobCategory: string;
@@ -23,6 +32,23 @@ export default function UpdateServicesForm({ career }: { career: CareerType }) {
     const [formData, setFormData] = useState<CareerType>(career);
 
     const router = useRouter();
+
+    const editor = useEditor({
+        extensions: [
+            StarterKit,
+            Bold,
+            Italic,
+            Underline,
+            BulletList,
+            OrderedList,
+            Heading.configure({ levels: [1, 2, 3] }),
+        ],
+        content: formData.jobDescription || "",
+        onUpdate: ({ editor }) => {
+            setFormData((prev) => ({ ...prev, jobDescription: editor.getHTML() }));
+        },
+    });
+
 
     const handleBack = () => {
         const historyStack: string[] = JSON.parse(sessionStorage.getItem("historyStack") || "[]");
@@ -84,11 +110,28 @@ export default function UpdateServicesForm({ career }: { career: CareerType }) {
                 {/* Left Section (Content) */}
                 <div className="w-[72%] p-10 py-8 bg-white">
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        <label className="block text-lg font-bold text-black">Job Identifire</label>
+                        <input type="text" name="jobIdentifire" placeholder="Job Identifire..." value={formData.jobIdentifire} onChange={handleChange} className="w-full p-2 border rounded bg-gray-200 text-gray-500 cursor-not-allowed" disabled />
+                        
                         <label className="block text-lg font-bold text-black">Job title <span className="text-red-500 text-2xl leading-none">*</span></label>
                         <input type="text" name="jobTitle" placeholder="Job title..." value={formData.jobTitle} onChange={handleChange} className="w-full p-2 border rounded" required />
 
                         <label className="block text-lg font-bold text-black">Job Description <span className="text-red-500 text-2xl leading-none">*</span></label>
-                        <textarea rows={6} name="jobDescription" placeholder="Job Description..." value={formData.jobDescription} onChange={handleChange} className="w-full p-2 border rounded" required />
+                        <div className="w-full min-h-[200px] border rounded p-2 bg-white">
+                            {/* Toolbar */}
+                            {editor && (
+                                <div className="mb-2 flex gap-2 border-b pb-2">
+                                    <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className="p-2 border rounded">Bold</button>
+                                    <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className="p-2 border rounded">Italic</button>
+                                    <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className="p-2 border rounded">Underline</button>
+                                    <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className="p-2 border rounded">Bullet List</button>
+                                    <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className="p-2 border rounded">Ordered List</button>
+                                    <button type="button" onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className="p-2 border rounded">H2</button>
+                                </div>
+                            )}
+                            {/* Editor Content */}
+                            {editor ? <EditorContent editor={editor} className="h-full min-h-[150px] overflow-auto" /> : <p>Loading editor...</p>}
+                        </div>
 
                         <label className="block text-lg font-bold text-black">Job Category <span className="text-red-500 text-2xl leading-none">*</span></label>
                         <input type="text" name="jobCategory" placeholder="Job Category..." value={formData.jobCategory} onChange={handleChange} className="w-full p-2 border rounded" required />

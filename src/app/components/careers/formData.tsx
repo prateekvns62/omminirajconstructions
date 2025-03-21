@@ -10,6 +10,7 @@ import { format } from "date-fns";
 
 interface CareerType {
   id: number;
+  jobIdentifire: string;
   jobTitle: string;
   jobDescription: string;
   jobCategory: string;
@@ -135,8 +136,9 @@ export default function BranchDetails({ career }: { career: CareerType }) {
       </div>
       <div>
         <Descriptions bordered column={1} size="middle" title="Basic Details">
+          <Descriptions.Item label="Job Identifire">{career.jobIdentifire}</Descriptions.Item>
           <Descriptions.Item label="Job Title">{career.jobTitle}</Descriptions.Item>
-          <Descriptions.Item label="Job Description">{career.jobDescription}</Descriptions.Item>
+          <Descriptions.Item label="Job Description"><div dangerouslySetInnerHTML={{ __html: career.jobDescription }} /></Descriptions.Item>
           <Descriptions.Item label="Job Category">{career.jobCategory}</Descriptions.Item>
           <Descriptions.Item label="Job Type">{career.jobType}</Descriptions.Item>
           <Descriptions.Item label="Job location">{career.jobLocation}</Descriptions.Item>

@@ -45,6 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const branch = await prisma.jobOpenings.update({
                 where: { id: Number(id) },
                 data: {
+                    jobIdentifire: rawFields.jobIdentifire as string,
                     jobTitle: rawFields.jobTitle as string,
                     jobDescription: rawFields.jobDescription as string,
                     jobCategory: rawFields.jobCategory as string,

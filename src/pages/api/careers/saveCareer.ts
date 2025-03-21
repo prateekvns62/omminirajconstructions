@@ -41,6 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         try {
             const career = await prisma.jobOpenings.create({
                 data: {
+                    jobIdentifire: rawFields.jobIdentifire as string,
                     jobTitle: rawFields.jobTitle as string,
                     jobDescription: rawFields.jobDescription as string,
                     jobCategory: rawFields.jobCategory as string,

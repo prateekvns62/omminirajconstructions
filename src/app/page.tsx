@@ -31,10 +31,10 @@ export default function Home() {
             <Link href="#" className="text-white font-medium">
               About Us
             </Link>
-            <Link href="#" className="text-white font-medium">
+            <Link href="/construction-services" className="text-white font-medium">
               Our Services
             </Link>
-            <Link href="#" className="text-white font-medium">
+            <Link href="/career" className="text-white font-medium">
               Careers
             </Link>
             <Link href="#" className="text-white font-medium">
@@ -165,11 +165,11 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <Image
-                src="/placeholder.svg?height=60&width=140"
+                src="/logo.jpg"
                 alt="Om Miniraj Logo"
                 width={140}
                 height={60}
-                className="mb-4"
+                className="mr-4"
               />
               <p className="text-sm mb-4">
                 Om Miniraj Building and Construction Services Private Limited is a trusted name in the world of
@@ -186,12 +186,12 @@ export default function Home() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
+                  <Link href="/construction-services" className="text-gray-300 hover:text-white">
                     Our Services
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
+                  <Link href="/career" className="text-gray-300 hover:text-white">
                     Projects
                   </Link>
                 </li>
@@ -206,13 +206,8 @@ export default function Home() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
+                  <Link href="/ongoing-projects" className="text-gray-300 hover:text-white">
                     Ongoing Projects
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-gray-300 hover:text-white">
-                    Completed Projects
                   </Link>
                 </li>
               </ul>
