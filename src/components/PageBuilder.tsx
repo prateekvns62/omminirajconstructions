@@ -9,6 +9,7 @@ import grapesjsForms from "grapesjs-plugin-forms";
 import { Box, Button, TextField, Stack } from "@mui/material";
 import { message } from "antd";
 import '@ant-design/v5-patch-for-react-19';
+import MediaGallery from "./MediaGallery";
 
 interface PagesType {
   id: number;
@@ -51,6 +52,40 @@ export default function PageBuilder({ page }: { page?: PagesType | null }) {
         editorRef.current.setStyle(page.css);
       }
 
+      editorRef.current.BlockManager.add("open-media-gallery", {
+        label: "Media Gallery",
+        category: "Custom Blocks",
+        attributes: { class: "fa fa-image" },
+        content: {
+          tagName: "img",
+          attributes: {
+            src: "",
+            alt: "Click to select image",
+            width: "200",
+            height: "200",
+            style: "background-color: #ccc; display: block; cursor: pointer;",
+          },
+        },
+      });
+
+      editorRef.current.Panels.addButton("options", {
+        id: "open-media-gallery",
+        className: "fa fa-image",
+        command: "open-media-gallery",
+        attributes: { title: "Open Media Gallery" },
+      });
+
+      editorRef.current.Commands.add("open-media-gallery", {
+        run: () => {
+          setShowGallery(true); // Open Media Gallery
+        },
+      });
+  
+      // Listen for the event
+      editorRef.current.on("open-media-gallery", () => {
+        setShowGallery(true);
+      });
+
       // Change Panel & Block Background Color to Black
       const style = document.createElement("style");
       style.innerHTML = `
@@ -66,7 +101,19 @@ export default function PageBuilder({ page }: { page?: PagesType | null }) {
       `;
       document.head.appendChild(style);
     }
-  }, );
+    
+  }, [page]);
+
+  const [showGallery, setShowGallery] = useState(false);
+
+  const handleImageSelect = (url: string) => {
+    const editor = editorRef.current;
+    const selectedComponent = editor.getSelected();
+    if (selectedComponent && selectedComponent.is("image")) {
+      selectedComponent.set("src", url);
+    }
+    setShowGallery(false);
+  };
 
   const saveHtmlCss =  async () => {
     const editor = editorRef.current;
@@ -156,6 +203,7 @@ export default function PageBuilder({ page }: { page?: PagesType | null }) {
         <Box id="blocks" sx={{ width: "250px", p: 2 }} />
         <div id="gjs" style={{ flex: 1 }} />
       </Box>
+      {showGallery && <MediaGallery onSelect={handleImageSelect} />}
     </Box>
   );
 }
