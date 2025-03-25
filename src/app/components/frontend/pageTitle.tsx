@@ -10,7 +10,7 @@ const PageTitle: React.FC<PageTitleProps> = ({ title, backgroundImage }) => {
 
   return (
     <div
-      className="relative w-full h-64 flex items-center justify-center text-center text-black font-bold text-3xl"
+      className="relative w-full h-32 md:h-64 flex items-center justify-center text-center text-black font-bold text-xl md:text-3xl"
       style={{
         backgroundImage: `url(${backgroundImage || defaultBackground})`,
         backgroundSize: "cover",
@@ -20,7 +20,7 @@ const PageTitle: React.FC<PageTitleProps> = ({ title, backgroundImage }) => {
       <div className="absolute inset-0 bg-yellow-500 opacity-80"></div>
 
       {/* Title Text */}
-      <h2 className="relative z-10 text-5xl">{title}</h2>
+      <h2 className="relative z-10 md:text-5xl text-2xl">{title}</h2>
     </div>
   );
 };

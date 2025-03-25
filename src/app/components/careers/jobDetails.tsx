@@ -8,6 +8,7 @@ import { message } from "antd";
 import Loader from "../admin/loader";
 import '@ant-design/v5-patch-for-react-19';
 import CureerOverview from "./careerOverView";
+import PageTitle from "../frontend/pageTitle";
 
 interface CareerType {
     id: number;
@@ -165,6 +166,7 @@ export default function JobDetailPage({ job }: { job: CareerType } ) {
 
     return (
       <div>
+      <PageTitle title={`Career - ${job.jobTitle}`} />
       <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left Side - Job Details */}
         <div>

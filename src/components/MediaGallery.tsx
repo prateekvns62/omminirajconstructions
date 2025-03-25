@@ -71,57 +71,95 @@ export default function MediaGallery({ onSelect }: { onSelect: (url: string) => 
       </Button>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          Select an Image
-          <IconButton onClick={() => setOpen(false)}>
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2, justifyContent: "center", p: 2 }}>
-            {loading ? (
-              <CircularProgress />
-            ) : images.length > 0 ? (
-              images.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt="Gallery"
-                  width="100"
-                  height="100"
-                  style={{
-                    cursor: "pointer",
-                    borderRadius: "8px",
-                    objectFit: "cover",
-                    transition: "0.2s",
-                    border: "2px solid transparent",
-                  }}
-                  onClick={() => {
-                    onSelect(img);
-                    setOpen(false);
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.border = "2px solid #1976d2")}
-                  onMouseOut={(e) => (e.currentTarget.style.border = "2px solid transparent")}
-                />
-              ))
-            ) : (
-              <p>No images found</p>
-            )}
+  <DialogTitle
+    sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+  >
+    Select an Image
+    <IconButton onClick={() => setOpen(false)}>
+      <CloseIcon />
+    </IconButton>
+  </DialogTitle>
+  <DialogContent>
+    {/* Image Grid Container */}
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "repeat(6, 1fr)", // 6 columns
+        gap: 2,
+        justifyContent: "center",
+        p: 2,
+        maxHeight: "400px", // Limit height
+        overflowY: "auto", // Scrollable if more images exist
+      }}
+    >
+      {loading ? (
+        <CircularProgress />
+      ) : images.length > 0 ? (
+        images.map((img, index) => (
+          <Box
+            key={index}
+            sx={{
+              width: "100px",
+              height: "100px",
+              cursor: "pointer",
+              borderRadius: "8px",
+              transition: "0.2s",
+              border: "2px solid transparent",
+              "&:hover": { border: "2px solid #1976d2" },
+            }}
+            onClick={() => {
+              onSelect(img);
+              setOpen(false);
+            }}
+          >
+            <img
+              src={img}
+              alt="Gallery"
+              width="100%"
+              height="100%"
+              style={{ objectFit: "cover", borderRadius: "8px" }}
+            />
           </Box>
+        ))
+      ) : (
+        <p>No images found</p>
+      )}
+    </Box>
 
-          <Box sx={{ mt: 2, display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <input type="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files?.[0] || null)} />
-            <Button 
-              onClick={handleImageUpload} 
-              disabled={!selectedFile || uploading} 
-              sx={{ mt: 1 }}
-              variant="contained"
-            >
-              {uploading ? "Uploading..." : "Upload"}
-            </Button>
-          </Box>
-        </DialogContent>
-      </Dialog>
+    {/* Upload Section */}
+    <Box sx={{ mt: 2, display: "flex", alignItems: "center", gap: 2, justifyContent: "center" }}>
+      <Button
+        component="label"
+        variant="contained"
+        sx={{
+          bgcolor: "#1976d2",
+          color: "white",
+          px: 3,
+          py: 1,
+          borderRadius: "8px",
+          "&:hover": { bgcolor: "#125a9e" },
+        }}
+      >
+        Upload Image
+        <input
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+        />
+      </Button>
+
+      <Button
+        onClick={handleImageUpload}
+        disabled={!selectedFile || uploading}
+        variant="contained"
+      >
+        {uploading ? "Uploading..." : "Submit"}
+      </Button>
+    </Box>
+  </DialogContent>
+</Dialog>
+
     </>
   );
 }

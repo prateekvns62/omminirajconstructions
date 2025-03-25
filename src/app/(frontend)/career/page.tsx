@@ -1,5 +1,12 @@
 import JobListing from "@/app/components/careers/jobListing";
 import { PrismaClient } from "@prisma/client";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Career - Om Miniraj Building & Construction Services Private Limited",
+    description:
+      "Welcome to Om Miniraj Building and Construction Services Private Limited, your trusted partner in the world of construction and infrastructure development in India.",
+};
 
 const prisma = new PrismaClient();
 

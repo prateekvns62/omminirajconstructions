@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import CureerOverview from "./careerOverView";
 import '@ant-design/v5-patch-for-react-19';
 import { Skeleton } from "antd";
+import PageTitle from "../frontend/pageTitle";
 
 interface CareerType {
     id: number;
@@ -57,9 +58,9 @@ const JobListing = ({ jobs }: { jobs: CareerType[] }) => {
   const uniqueLocations = Array.from(new Set(jobs.map((job) => job.jobLocation)));
 
   return (
-    <div className="p-6">
-      <h2 className="text-3xl font-bold text-center mb-6">Careers</h2>
-      
+    <>
+    <PageTitle title="Career" />
+    <div className="max-w-6xl mx-auto p-6 mt-8">
       {loading ? (
         <Skeleton active paragraph={{ rows: 10 }} />
       ) : jobs.length === 0 ? (
@@ -122,7 +123,7 @@ const JobListing = ({ jobs }: { jobs: CareerType[] }) => {
           overflow: hidden;
         }
       `}</style>
-    </div>
+    </div></>
   );
 };
 

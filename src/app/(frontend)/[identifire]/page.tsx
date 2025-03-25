@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default async function JobPaymentPage({ params }: { params: Promise<{ identifire: string }> }) {
+export default async function DynamicPage({ params }: { params: Promise<{ identifire: string }> }) {
   try {
 
     const { identifire } = await params;

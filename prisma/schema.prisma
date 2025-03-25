@@ -252,3 +252,10 @@ model pageContent {
   css   String @db.Text
   createdAt DateTime @default(now())
 }
+
+model generalSetting {
+  id    Int @id @default(autoincrement())
+  key   String @unique
+  title String
+  value String?  @db.Text
+}
