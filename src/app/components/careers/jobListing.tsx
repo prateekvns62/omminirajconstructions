@@ -60,7 +60,7 @@ const JobListing = ({ jobs }: { jobs: CareerType[] }) => {
   return (
     <>
     <PageTitle title="Career" />
-    <div className="max-w-6xl mx-auto p-6 mt-8">
+    <div className="container max-w-7xl mx-auto p-6 mt-8 md:px-0">
       {loading ? (
         <Skeleton active paragraph={{ rows: 10 }} />
       ) : jobs.length === 0 ? (

@@ -148,8 +148,8 @@ export default function UpdateCertificateForm({ certificate }: { certificate: Ce
                             <option value="1">Active</option>
                         </select>
 
-                        <label className="block text-lg font-bold text-black">Certificate ID <span className="text-red-500 text-2xl leading-none">*</span></label>
-                        <input type="text" name="certificateId" placeholder="Certificate ID..." value={formData.certificateId} onChange={handleChange} className="w-full p-2 border rounded" required />
+                        <label className="block text-lg font-bold text-black">Certificate ID</label>
+                        <input type="text" name="certificateId" placeholder="Certificate ID..." value={formData.certificateId} onChange={handleChange} className="w-full p-2 border rounded" />
 
                         <label className="block text-lg font-bold text-black">Certificate Approval Date</label>
                         <input type="date" name="certificateApprovalDate" value={formData.certificateApprovalDate instanceof Date ? formData.certificateApprovalDate.toISOString().split("T")[0]  : formData.certificateApprovalDate} onChange={handleChange} className="w-full p-2 border rounded" />

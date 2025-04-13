@@ -24,7 +24,7 @@ export default function ProjectGalleryPage() {
   return (
     <>
       <PageTitle title="Ongoing Projects" />
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4  max-w-7xl md:px-0">
         {/* First 6 videos - 2 in a row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
           {projects.slice(0, 6).map((project) => (

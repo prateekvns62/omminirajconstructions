@@ -30,7 +30,7 @@ export function ServicesSection() {
     <>
       <PageTitle title="Construction Services" />
       <section className="py-12 bg-white">
-        <div className="container mx-auto px-4">
+        <div className="container max-w-7xl mx-auto px-4 md:px-0">
         <h2 className="text-2xl font-bold text-center mb-4">Our Services</h2>
         <p className="text-center text-lg text-gray-700 mb-10">
           Om Miniraj Building and Construction Services Private Limited offers a comprehensive range of construction services, including but not limited to:

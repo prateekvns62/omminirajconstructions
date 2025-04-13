@@ -167,7 +167,7 @@ export default function JobDetailPage({ job }: { job: CareerType } ) {
     return (
       <div>
       <PageTitle title={`Career - ${job.jobTitle}`} />
-      <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="container max-w-7xl md:px-0 mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left Side - Job Details */}
         <div>
           <h1 className="text-3xl font-bold">{job.jobTitle}</h1>
@@ -229,7 +229,7 @@ export default function JobDetailPage({ job }: { job: CareerType } ) {
           </form>
         </div>
       </div>
-      <div className="max-w-6xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6 md:px-0"> 
         <CureerOverview/>
       </div>
       {isLoading && (
