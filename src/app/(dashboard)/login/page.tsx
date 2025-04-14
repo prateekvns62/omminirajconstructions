@@ -9,7 +9,6 @@ import Image from "next/image";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();

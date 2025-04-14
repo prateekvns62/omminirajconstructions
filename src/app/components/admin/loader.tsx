@@ -22,7 +22,7 @@ const Loader = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 bg-white/30 backdrop-blur-sm flex justify-center items-center z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex flex-col justify-center items-center z-50">
       <div className="w-16 h-16 border-4 border-blue-500 border-solid border-t-transparent rounded-full animate-spin shadow-lg"></div>
     </div>
   );

@@ -16,8 +16,7 @@ import {
     FileText, 
     Award, 
     MapPin, 
-    File, 
-    ImagePlus
+    File
 } from "lucide-react";
 import Loader from "./loader";
 
@@ -69,21 +68,13 @@ const menuItems = [
       ],
   },
   { 
-      name: "Gallery", 
-      path: "/admin/gallery", 
-      icon: <ImagePlus size={18} color="pink" />,
-      subMenu: [
-          { name: "All Images", path: "/admin/gallery/all" },
-          { name: "Add Image", path: "/admin/gallery/add" },
-      ],
-  },
-  { 
-      name: "Ongoing Projects", 
-      path: "/admin/ongoing-projects", 
+      name: "Careers", 
+      path: "/admin/careers", 
       icon: <Clipboard size={18} color="brown" />,
       subMenu: [
-          { name: "All Projects", path: "/admin/ongoing-projects/all" },
-          { name: "Add Project", path: "/admin/ongoing-projects/add" },
+          { name: "All Jobs", path: "/admin/careers/all" },
+          { name: "Add Job", path: "/admin/careers/add" },
+          { name: "Job Applictions", path: "/admin/careers/application" },
       ],
   },
   { 
@@ -93,6 +84,9 @@ const menuItems = [
       subMenu: [
           { name: "All Pages", path: "/admin/pages/all" },
           { name: "Add Page", path: "/admin/pages/add" },
+          { name: "Add Gallery", path: "/admin/pages/gallery" },
+          { name: "Add Winners", path: "/admin/pages/winners" },
+          { name: "Projects", path: "/admin/pages/projects" },
       ],
   },
   {
