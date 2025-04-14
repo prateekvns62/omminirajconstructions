@@ -20,7 +20,7 @@ const initialSettings = [
     id: number;
     key: string;
     title: string;
-    value: string;
+    value: string | null;
   }
 
 export default function GeneralSettingForm({ general }: { general: GeneralType[] | null }) {
