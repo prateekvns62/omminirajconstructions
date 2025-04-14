@@ -1,6 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
+import { IconType } from "react-icons/lib";
+
+type SocialLink = {
+  href: string;
+  icon: IconType;
+  label: string;
+};
+
+const socialLinks: SocialLink[] = [
+  { href: "https://www.facebook.com/share/1EkczoEPpc/", icon: FaFacebook, label: "Facebook" },
+  { href: "https://www.instagram.com/omminirajbuildingconstruction", icon: FaInstagram, label: "Instagram" },
+  { href: "https://www.youtube.com/@omminirajbuildingandconstructi", icon: FaYoutube, label: "YouTube" },
+];
 
 export default function Footer() {
   return (
@@ -43,12 +56,8 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
             <ul className="space-y-3">
-              {[
-                ["https://www.facebook.com/share/1EkczoEPpc/", FaFacebook, "Facebook"],
-                ["https://www.instagram.com/omminirajbuildingconstruction", FaInstagram, "Instagram"],
-                ["https://www.youtube.com/@omminirajbuildingandconstructi", FaYoutube, "YouTube"],
-              ].map(([href, Icon, label]) => (
-                <li key={href} className="flex items-center gap-3">
+              {socialLinks.map(({ href, icon: Icon, label }) => (
+                <li key={label} className="flex items-center gap-3">
                   <Icon className="w-5 h-5 text-yellow-600" />
                   <Link href={href} className="hover:text-white transition">
                     {label}
