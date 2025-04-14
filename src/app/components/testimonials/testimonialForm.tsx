@@ -19,7 +19,7 @@ export default function TestimonialForm() {
     }>({
         customerName: "",
         reviewMessage: "",
-        showOnHome: false,
+        showOnHome: true,
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -66,7 +66,7 @@ export default function TestimonialForm() {
 
     return (
         <div>
-            <PageTitle title="Add New Service" />
+            <PageTitle title="Add New Testimonials" />
             
             <div className="flex w-full gap-x-8 px-4">
                 {/* Left Section (Content) */}

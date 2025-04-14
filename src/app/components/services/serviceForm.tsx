@@ -24,7 +24,7 @@ export default function ServicesForm() {
         serviceTitle: "",
         description: "",
         image: null,
-        status: false,
+        status: true,
         showOnHome: false,
     });
 

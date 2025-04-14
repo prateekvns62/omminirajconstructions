@@ -138,7 +138,7 @@ model activeCertificate {
 model ourServices {
   id            Int   @id @default(autoincrement())
   serviceTitle  String
-  description   String
+  description   String  @db.Text
   image         String
   status        Boolean  @default(true)
   showOnHome    Boolean  @default(false)
@@ -147,7 +147,7 @@ model ourServices {
 model customerTestimonials {
   id             Int   @id @default(autoincrement())
   customerName   String
-  reviewMessage  String
+  reviewMessage  String @db.Text
   showOnHome     Boolean  @default(true)
 }
 
@@ -157,28 +157,48 @@ model branches {
   branchName String
   location   String
   priority   Int
-  mapIframe  String
+  mapIframe  String @db.Text
+  image      String
+  status   Boolean @default(true)
   createdAt  DateTime  @default(now())
 }
 
-model Distributor {
-  id       Int   @id @default(autoincrement())
-  name     String
-  email    String
-  contact  String
-  village  String
-  district String
-  tahsil   String
-  position String
-  branchCode String
-  mapIframe  String
-  createdAt  DateTime  @default(now())
+model distributors {
+  id                   Int  @id @default(autoincrement())
+  distributorId          String?
+  name                 String
+  fatherName           String
+  villageCityLocality  String
+  tehsil               String
+  completeAddress      String
+  postOffice          String
+  policeStation       String
+  email               String  @unique
+  phoneNumber         String
+  aadhaarCardNumber   String
+  aadhaarCardFront    String  // Store file path or URL
+  aadhaarCardBack     String  // Store file path or URL
+  panCardNumber       String
+  panCardPhoto        String  // Store file path or URL
+  passportSizePhoto   String  // Store file path or URL
+  bankName            String
+  bankAccountNumber   String
+  bankIfscCode        String
+  status              Int //0-submitted, 1 approved, 2 rejected
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 model imageGallery {
   id    Int   @id @default(autoincrement())
   image String
-  title String?
+  position Int
+}
+
+model imageWinners {
+  id    Int   @id @default(autoincrement())
+  image String
+  position Int
 }
 
 model ourClients {
@@ -193,8 +213,49 @@ model ourClients {
 
 model ongoingProjects {
   id          Int   @id @default(autoincrement())
-  type        Int  // "portrait" or "landscape"
-  linkType    Int  //"url" or "iframe"
-  youtubeLink String?
-  iframeLink  String?
+  youtubeVideoId String
+  position Int
+}
+
+model jobOpenings {
+  id            Int    @id @default(autoincrement())
+  jobIdentifire String @unique
+  jobTitle      String
+  jobDescription String @db.Text
+  createdAt     DateTime @default(now())
+  jobCategory   String
+  jobType       String
+  jobLocation   String
+  status       Int     @default(0) // 0 - Publish, 1 - Closed
+  applications  jobApplication[] @relation("jobApplication") // No need to specify fields & references here
+}
+
+model jobApplication {
+  id           Int     @id @default(autoincrement())
+  name         String
+  email        String @unique
+  contact      String
+  coverLetter  String  @db.Text
+  resume       String
+  status       Int     @default(0) // 0 - Pending, 1 - Accepted, 2 - Rejected
+  createdAt    DateTime @default(now())
+  submittedBy  Int     // 0 - User, 1 - Admin
+  jobId        Int
+  job          jobOpenings     @relation("jobApplication", fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model pageContent {
+  id    Int @id @default(autoincrement())
+  identifier String @unique
+  title String
+  html  String @db.Text
+  css   String @db.Text
+  createdAt DateTime @default(now())
+}
+
+model generalSetting {
+  id    Int @id @default(autoincrement())
+  key   String @unique
+  title String
+  value String?  @db.Text
 }
